@@ -2638,21 +2638,15 @@ pi_result hip_piMemImageCreate(pi_context context, pi_mem_flags flags,
   assert(ret_mem != nullptr);
   const bool performInitialCopy = (flags & PI_MEM_FLAGS_HOST_PTR_COPY) ||
                                   ((flags & PI_MEM_FLAGS_HOST_PTR_USE));
+  const auto numChannels = sycl::detail::pi::piImageNumberChannels(
+      image_format->image_channel_order);
   pi_result retErr = PI_SUCCESS;
-
-  // We only support RBGA channel order
-  // TODO: check SYCL CTS and spec. May also have to support BGRA
-  if (image_format->image_channel_order !=
-      pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RGBA) {
-    cl::sycl::detail::pi::die(
-        "hip_piMemImageCreate only supports RGBA channel order");
-  }
 
   // We have to use cuArray3DCreate, which has some caveats. The height and
   // depth parameters must be set to 0 produce 1D or 2D arrays. image_desc gives
   // a minimum value of 1, so we need to convert the answer.
   HIP_ARRAY3D_DESCRIPTOR array_desc;
-  array_desc.NumChannels = 4; // Only support 4 channel image
+  array_desc.NumChannels = numChannels;
   array_desc.Flags = 0;       // No flags required
   array_desc.Width = image_desc->image_width;
   if (image_desc->image_type == PI_MEM_TYPE_IMAGE1D) {
@@ -2710,8 +2704,7 @@ pi_result hip_piMemImageCreate(pi_context context, pi_mem_flags flags,
   }
 
   // When a dimension isn't used image_desc has the size set to 1
-  size_t pixel_size_bytes =
-      pixel_type_size_bytes * 4; // 4 is the only number of channels we support
+  size_t pixel_size_bytes = pixel_type_size_bytes * numChannels;
   size_t image_size_bytes = pixel_size_bytes * image_desc->image_width *
                             image_desc->image_height * image_desc->image_depth;
 

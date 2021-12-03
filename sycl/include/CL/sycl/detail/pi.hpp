@@ -424,6 +424,33 @@ template <> inline pi::PiDevice cast(cl_device_id) {
   return {};
 }
 
+// Return the number of channels from a given \p Order.
+inline uint8_t piImageNumberChannels(pi_image_channel_order Order) {
+  switch (Order) {
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_A:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_R:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_Rx:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_INTENSITY:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_LUMINANCE:
+    return 1;
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RG:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RGx:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RA:
+    return 2;
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RGB:
+    return 3;
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RGBx:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_RGBA:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_ARGB:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_BGRA:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_ABGR:
+  case pi_image_channel_order::PI_IMAGE_CHANNEL_ORDER_sRGBA:
+    return 4;
+  }
+  assert(false && "Unhandled image channel order");
+  return 0;
+}
+
 } // namespace pi
 } // namespace detail
 
