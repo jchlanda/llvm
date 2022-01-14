@@ -2301,6 +2301,12 @@ TARGET_BUILTIN(__nvvm_cp_async_commit_group, "v", "", AND(SM_80,PTX70))
 TARGET_BUILTIN(__nvvm_cp_async_wait_group, "vIi", "", AND(SM_80,PTX70))
 TARGET_BUILTIN(__nvvm_cp_async_wait_all, "v", "", AND(SM_80,PTX70))
 
+// bf16, bf16x2 abs, neg
+TARGET_BUILTIN(__nvvm_abs_bf16, "UsUs", "", AND(SM_80,PTX70))
+TARGET_BUILTIN(__nvvm_abs_bf16x2, "ZUiZUi", "", AND(SM_80,PTX70))
+TARGET_BUILTIN(__nvvm_neg_bf16, "UsUs", "", AND(SM_80,PTX70))
+TARGET_BUILTIN(__nvvm_neg_bf16x2, "ZUiZUi", "", AND(SM_80,PTX70))
+
 #undef BUILTIN
 #undef TARGET_BUILTIN
 #pragma pop_macro("AND")

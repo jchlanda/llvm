@@ -1216,6 +1216,18 @@ let TargetPrefix = "nvvm" in {
       Intrinsic<[llvm_i32_ty], [llvm_float_ty], [IntrNoMem]>;
 
 //
+// bf16, bf16x2 abs, neg
+//
+  foreach unary = ["abs", "neg"] in {
+    def int_nvvm_ # unary # _bf16 :
+      GCCBuiltin<!strconcat("__nvvm_", unary, "_bf16")>,
+      DefaultAttrsIntrinsic<[llvm_i16_ty], [llvm_i16_ty], [IntrNoMem]>;
+    def int_nvvm_ # unary # _bf16x2 :
+      GCCBuiltin<!strconcat("__nvvm_", unary, "_bf16x2")>,
+      DefaultAttrsIntrinsic<[llvm_i32_ty], [llvm_i32_ty], [IntrNoMem]>;
+  }
+
+//
 // Bitcast
 //
 

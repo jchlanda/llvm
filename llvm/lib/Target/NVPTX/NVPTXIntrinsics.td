@@ -549,19 +549,22 @@ def : Pat<(int_nvvm_fmin_d
 // We need a full string for OpcStr here because we need to deal with case like
 // INT_PTX_RECIP.
 class F_MATH_1<string OpcStr, NVPTXRegClass target_regclass,
-  NVPTXRegClass src_regclass, Intrinsic IntOP>
+  NVPTXRegClass src_regclass, Intrinsic IntOP, list<Predicate> Preds = []>
             : NVPTXInst<(outs target_regclass:$dst), (ins src_regclass:$src0),
             OpcStr,
-        [(set target_regclass:$dst, (IntOP src_regclass:$src0))]>;
+        [(set target_regclass:$dst, (IntOP src_regclass:$src0))]>,
+        Requires<Preds>;
 
 // We need a full string for OpcStr here because we need to deal with the case
 // like INT_PTX_NATIVE_POWR_F.
 class F_MATH_2<string OpcStr, NVPTXRegClass t_regclass,
-  NVPTXRegClass s0_regclass, NVPTXRegClass s1_regclass, Intrinsic IntOP>
+  NVPTXRegClass s0_regclass, NVPTXRegClass s1_regclass, Intrinsic IntOP,
+  list<Predicate> Preds = []>
             : NVPTXInst<(outs t_regclass:$dst),
               (ins s0_regclass:$src0, s1_regclass:$src1),
             OpcStr,
-        [(set t_regclass:$dst, (IntOP s0_regclass:$src0, s1_regclass:$src1))]>;
+        [(set t_regclass:$dst, (IntOP s0_regclass:$src0, s1_regclass:$src1))]>,
+        Requires<Preds>;
 
 class F_MATH_3<string OpcStr, NVPTXRegClass t_regclass,
   NVPTXRegClass s0_regclass, NVPTXRegClass s1_regclass,
@@ -718,6 +721,18 @@ def INT_NVVM_FABS_F : F_MATH_1<"abs.f32 \t$dst, $src0;", Float32Regs,
 
 def INT_NVVM_FABS_D : F_MATH_1<"abs.f64 \t$dst, $src0;", Float64Regs,
   Float64Regs, int_nvvm_fabs_d>;
+
+//
+// bf16, bf16x2 abs, neg
+//
+def INT_NVVM_ABS_BF16 : F_MATH_1<"abs.bf16 \t$dst, $dst;", Int16Regs,
+  Int16Regs, int_nvvm_abs_bf16, [hasPTX70, hasSM80]>;
+def INT_NVVM_ABS_BF16X2 : F_MATH_1<"abs.bf16x2 \t$dst, $dst;", Int32Regs,
+  Int32Regs, int_nvvm_abs_bf16x2, [hasPTX70, hasSM80]>;
+def INT_NVVM_NEG_BF16 : F_MATH_1<"neg.bf16 \t$dst, $dst;", Int16Regs,
+  Int16Regs, int_nvvm_neg_bf16, [hasPTX70, hasSM80]>;
+def INT_NVVM_NEG_BF16X2 : F_MATH_1<"neg.bf16x2 \t$dst, $dst;", Int32Regs,
+  Int32Regs, int_nvvm_neg_bf16x2, [hasPTX70, hasSM80]>;
 
 //
 // Round
