@@ -4231,3 +4231,62 @@ __device__ void nvvm_cvt_sm80() {
 #endif
   // CHECK: ret void
 }
+
+// CHECK-LABEL: nvvm_abs_neg_bf16_bf16x2_sm80
+__device__ void nvvm_abs_neg_bf16_bf16x2_sm80() {
+#if __CUDA_ARCH__ >= 800
+
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.abs.bf16(i16 -1)
+  __nvvm_abs_bf16(0xFFFF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.abs.bf16x2(i32 -1)
+  __nvvm_abs_bf16x2(0xFFFFFFFF);
+
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.neg.bf16(i16 -1)
+  __nvvm_neg_bf16(0xFFFF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.neg.bf16x2(i32 -1)
+  __nvvm_neg_bf16x2(0xFFFFFFFF);
+#endif
+  // CHECK: ret void
+}
+
+// CHECK-LABEL: nvvm_min_max_sm80
+__device__ void nvvm_min_max_sm80() {
+#if __CUDA_ARCH__ >= 800
+
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmin.nan.f
+  __nvvm_fmin_nan_f(0.1f, (float)0x7FBFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmin.ftz.nan.f
+  __nvvm_fmin_ftz_nan_f(0.1f, (float)0x7FBFFFFF);
+
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.fmin.bf16
+  __nvvm_fmin_bf16(0x1234, 0x7FBF);
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.fmin.nan.bf16
+  __nvvm_fmin_nan_bf16(0x1234, 0x7FBF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.fmin.bf16x2
+  __nvvm_fmin_bf16x2(0x7FBFFFFF, 0xFFFFFFFF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.fmin.nan.bf16x2
+  __nvvm_fmin_nan_bf16x2(0x7FBFFFFF, 0xFFFFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.nan.f
+  __nvvm_fmax_nan_f(0.1f, (float)0x7FBFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.ftz.nan.f
+  __nvvm_fmax_ftz_nan_f(0.1f, (float)0x7FBFFFFF);
+
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.nan.f
+  __nvvm_fmax_nan_f(0.1f, (float)0x7FBFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.ftz.nan.f
+  __nvvm_fmax_ftz_nan_f(0.1f, (float)0x7FBFFFFF);
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.fmax.bf16
+  __nvvm_fmax_bf16(0x1234, 0x7FBF);
+  // CHECK_PTX70_SM80: call i16 @llvm.nvvm.fmax.nan.bf16
+  __nvvm_fmax_nan_bf16(0x1234, 0x7FBF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.fmax.bf16x2
+  __nvvm_fmax_bf16x2(0x7FBFFFFF, 0xFFFFFFFF);
+  // CHECK_PTX70_SM80: call i32 @llvm.nvvm.fmax.nan.bf16x2
+  __nvvm_fmax_nan_bf16x2(0x7FBFFFFF, 0xFFFFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.nan.f
+  __nvvm_fmax_nan_f(0.1f, (float)0x7FBFFFFF);
+  // CHECK_PTX70_SM80: call float @llvm.nvvm.fmax.ftz.nan.f
+  __nvvm_fmax_ftz_nan_f(0.1f, (float)0x7FBFFFFF);
+#endif
+  // CHECK: ret void
+}
