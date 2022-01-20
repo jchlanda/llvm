@@ -283,6 +283,38 @@ multiclass F3<string OpcStr, SDNode OpNode> {
                Requires<[useFP16Math]>;
 }
 
+multiclass F3_F16_F16X2<string OpcStr, SDNode OpNode> {
+   def f16rr :
+     NVPTXInst<(outs Float16Regs:$dst),
+               (ins Float16Regs:$a, Float16Regs:$b),
+               !strconcat(OpcStr, ".f16 \t$dst, $a, $b;"),
+               [(set Float16Regs:$dst,
+                  (OpNode Float16Regs:$a, Float16Regs:$b))]>,
+               Requires<[hasPTX70, hasSM80, useFP16Math]>;
+   def f16rr_ftz :
+     NVPTXInst<(outs Float16Regs:$dst),
+               (ins Float16Regs:$a, Float16Regs:$b),
+               !strconcat(OpcStr, ".ftz.f16 \t$dst, $a, $b;"),
+               [(set Float16Regs:$dst,
+                  (OpNode Float16Regs:$a, Float16Regs:$b))]>,
+               Requires<[hasPTX70, hasSM80, useFP16Math, doF32FTZ]>;
+
+   def f16x2rr :
+     NVPTXInst<(outs Float16x2Regs:$dst),
+               (ins Float16x2Regs:$a, Float16x2Regs:$b),
+               !strconcat(OpcStr, ".f16x2 \t$dst, $a, $b;"),
+               [(set Float16x2Regs:$dst,
+                  (OpNode Float16x2Regs:$a, Float16x2Regs:$b))]>,
+               Requires<[hasPTX70, hasSM80, useFP16Math]>;
+   def f16x2rr_ftz :
+     NVPTXInst<(outs Float16x2Regs:$dst),
+               (ins Float16x2Regs:$a, Float16x2Regs:$b),
+               !strconcat(OpcStr, ".ftz.f16x2 \t$dst, $a, $b;"),
+               [(set Float16x2Regs:$dst,
+                  (OpNode Float16x2Regs:$a, Float16x2Regs:$b))]>,
+               Requires<[hasPTX70, hasSM80, useFP16Math, doF32FTZ]>;
+}
+
 // Template for instructions which take three FP args.  The
 // instructions are named "<OpcStr>.f<Width>" (e.g. "add.f64").
 //
@@ -900,6 +932,8 @@ defm FMAX : F3<"max", fmaxnum>;
 defm FMINNAN : F3<"min.NaN", fminimum>;
 defm FMAXNAN : F3<"max.NaN", fmaximum>;
 
+defm FMIN_F16_F16X2 : F3_F16_F16X2<"min", fminnum>;
+defm FMAX_F16_F16X2 : F3_F16_F16X2<"max", fmaxnum>;
 defm FABS  : F2<"abs", fabs>;
 defm FNEG  : F2<"neg", fneg>;
 defm FSQRT : F2<"sqrt.rn", fsqrt>;
