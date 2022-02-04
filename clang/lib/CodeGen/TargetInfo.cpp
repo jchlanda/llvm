@@ -145,6 +145,23 @@ static bool occupiesMoreThan(CodeGenTypes &cgt,
   return (intCount + fpCount > maxAllRegisters);
 }
 
+static void addAMDGCNNVVMMetadata(const char *AnnotationName,
+                                  llvm::GlobalValue *GV, StringRef Name,
+                                  int Operand) {
+  llvm::Module *M = GV->getParent();
+  llvm::LLVMContext &Ctx = M->getContext();
+
+  // Get annotations metadata node.
+  llvm::NamedMDNode *MD = M->getOrInsertNamedMetadata(AnnotationName);
+
+  llvm::Metadata *MDVals[] = {
+      llvm::ConstantAsMetadata::get(GV), llvm::MDString::get(Ctx, Name),
+      llvm::ConstantAsMetadata::get(
+          llvm::ConstantInt::get(llvm::Type::getInt32Ty(Ctx), Operand))};
+  // Append metadata to annotations node.
+  MD->addOperand(llvm::MDNode::get(Ctx, MDVals));
+}
+
 bool SwiftABIInfo::isLegalVectorTypeForSwift(CharUnits vectorSize,
                                              llvm::Type *eltTy,
                                              unsigned numElts) const {
@@ -7297,18 +7314,7 @@ void NVPTXTargetCodeGenInfo::setTargetAttributes(
 
 void NVPTXTargetCodeGenInfo::addNVVMMetadata(llvm::GlobalValue *GV,
                                              StringRef Name, int Operand) {
-  llvm::Module *M = GV->getParent();
-  llvm::LLVMContext &Ctx = M->getContext();
-
-  // Get "nvvm.annotations" metadata node
-  llvm::NamedMDNode *MD = M->getOrInsertNamedMetadata("nvvm.annotations");
-
-  llvm::Metadata *MDVals[] = {
-      llvm::ConstantAsMetadata::get(GV), llvm::MDString::get(Ctx, Name),
-      llvm::ConstantAsMetadata::get(
-          llvm::ConstantInt::get(llvm::Type::getInt32Ty(Ctx), Operand))};
-  // Append metadata to nvvm.annotations
-  MD->addOperand(llvm::MDNode::get(Ctx, MDVals));
+  addAMDGCNNVVMMetadata("nvvm.annotations", GV, Name, Operand);
 }
 
 bool NVPTXTargetCodeGenInfo::shouldEmitStaticExternCAliases() const {
@@ -9215,6 +9221,12 @@ public:
                             llvm::Value *BlockLiteral) const override;
   bool shouldEmitStaticExternCAliases() const override;
   void setCUDAKernelCallingConvention(const FunctionType *&FT) const override;
+
+private:
+  // Adds a NamedMDNode with GV, Name, and Operand as operands, and adds the
+  // resulting MDNode to the amdgcn.annotations MDNode.
+  static void addAMDGCNMetadata(llvm::GlobalValue *GV, StringRef Name,
+                                int Operand);
 };
 }
 
@@ -9229,6 +9241,11 @@ static bool requiresAMDGPUProtectedVisibility(const Decl *D,
           (D->hasAttr<CUDADeviceAttr>() || D->hasAttr<CUDAConstantAttr>() ||
            cast<VarDecl>(D)->getType()->isCUDADeviceBuiltinSurfaceType() ||
            cast<VarDecl>(D)->getType()->isCUDADeviceBuiltinTextureType()));
+}
+
+void AMDGPUTargetCodeGenInfo::addAMDGCNMetadata(llvm::GlobalValue *GV,
+                                                StringRef Name, int Operand) {
+  addAMDGCNNVVMMetadata("amdgcn.annotations", GV, Name, Operand);
 }
 
 void AMDGPUTargetCodeGenInfo::setFunctionDeclAttributes(
@@ -9335,6 +9352,12 @@ void AMDGPUTargetCodeGenInfo::setTargetAttributes(
 
   if (IsHIPKernel)
     F->addFnAttr("uniform-work-group-size", "true");
+
+  const bool IsSYCLKernel =
+      M.getLangOpts().SYCLIsDevice && FD && FD->hasAttr<CUDAGlobalAttr>();
+
+  if (IsSYCLKernel)
+    addAMDGCNMetadata(F, "kernel", 1);
 
   if (M.getContext().getTargetInfo().allowAMDGPUUnsafeFPAtomics())
     F->addFnAttr("amdgpu-unsafe-fp-atomics", "true");
