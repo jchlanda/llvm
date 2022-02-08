@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/ADT/StringSwitch.h"
 #include "llvm/SYCLLowerIR/SYCLLowerIRTargetHelpers.h"
+#include "llvm/ADT/StringSwitch.h"
 
 using namespace llvm;
 
@@ -42,34 +42,35 @@ unsigned getArchSharedASValue(ArchType AT) {
   }
 }
 
-void populateKernels(Module &M, SmallVector<KernelPayload> &Kernels,
-                     ArchType AT) {
-  std::string Annotation;
+std::string getAnnotationString(ArchType AT) {
   switch (AT) {
   case SYCLLowerIRTargetHelpers::ArchType::Cuda:
-    Annotation.assign("nvvm.annotations");
+    return std::string("nvvm.annotations");
     break;
   case SYCLLowerIRTargetHelpers::ArchType::AMDHSA:
-    Annotation.assign("amdgcn.annotations");
+    return std::string("amdgcn.annotations");
     break;
   default:
     llvm_unreachable("Unsupported arch type.");
   }
-  //
-  // Access `nvvm.annotations` to determine which functions are kernel entry
-  // points.
-  auto *NvvmMetadata = M.getNamedMetadata(Annotation);
-  if (!NvvmMetadata)
-    return;
+  return std::string();
+}
 
-  for (auto *MetadataNode : NvvmMetadata->operands()) {
+void populateKernels(Module &M, SmallVector<KernelPayload> &Kernels,
+                     ArchType AT) {
+  // Access `{amdgcn|nvvm}.annotations` to determine which functions are kernel
+  // entry points.
+  std::string Annotation = getAnnotationString(AT);
+  auto *AnnotationMetadata = M.getNamedMetadata(Annotation);
+  assert(AnnotationMetadata && "IR compiled must have annotations.");
+
+  for (auto *MetadataNode : AnnotationMetadata->operands()) {
     if (MetadataNode->getNumOperands() != 3)
       continue;
 
-    // NVPTX identifies kernel entry points using metadata nodes of the form:
+    // Kernel entry points are identified using metadata nodes of the form:
     //   !X = !{<function>, !"kernel", i32 1}
-    const MDOperand &TypeOperand = MetadataNode->getOperand(1);
-    auto *Type = dyn_cast<MDString>(TypeOperand);
+    auto *Type = dyn_cast<MDString>(MetadataNode->getOperand(1));
     if (!Type)
       continue;
     // Only process kernel entry points.
@@ -80,14 +81,9 @@ void populateKernels(Module &M, SmallVector<KernelPayload> &Kernels,
     const MDOperand &FuncOperand = MetadataNode->getOperand(0);
     if (!FuncOperand)
       continue;
-    auto *FuncConstant = dyn_cast<ConstantAsMetadata>(FuncOperand);
-    if (!FuncConstant)
-      continue;
-    auto *Func = dyn_cast<Function>(FuncConstant->getValue());
-    if (!Func)
-      continue;
-
-    Kernels.push_back(KernelPayload(Func, MetadataNode));
+    if (auto *FuncConstant = dyn_cast<ConstantAsMetadata>(FuncOperand))
+      if (auto *Func = dyn_cast<Function>(FuncConstant->getValue()))
+        Kernels.push_back(KernelPayload(Func, MetadataNode));
   }
 }
 

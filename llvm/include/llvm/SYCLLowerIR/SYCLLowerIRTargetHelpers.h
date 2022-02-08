@@ -33,6 +33,7 @@ struct KernelPayload {
 
 ArchType getArchType(const Module &M);
 unsigned getArchSharedASValue(ArchType AT);
+std::string getAnnotationString(ArchType AT);
 
 void populateKernels(Module &M, SmallVector<KernelPayload> &Kernels,
                      SYCLLowerIRTargetHelpers::ArchType AT);
