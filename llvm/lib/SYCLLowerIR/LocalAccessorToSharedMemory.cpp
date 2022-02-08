@@ -14,10 +14,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/SYCLLowerIR/LocalAccessorToSharedMemory.h"
 #include "llvm/IR/GlobalValue.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/PassManager.h"
+#include "llvm/SYCLLowerIR/LocalAccessorToSharedMemory.h"
+#include "llvm/SYCLLowerIR/SYCLLowerIRTargetHelpers.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Transforms/IPO.h"
 
@@ -40,14 +41,8 @@ namespace {
 
 class LocalAccessorToSharedMemory : public ModulePass {
 private:
-  enum class ArchType { Cuda, AMDHSA, Unsupported };
-
-  struct KernelPayload {
-    KernelPayload(Function *Kernel, MDNode *MD = nullptr)
-        : Kernel(Kernel), MD(MD){};
-    Function *Kernel;
-    MDNode *MD;
-  };
+  using KernelPayload = SYCLLowerIRTargetHelpers::KernelPayload;
+  using ArchType = SYCLLowerIRTargetHelpers::ArchType;
 
   unsigned SharedASValue = 0;
 
@@ -59,11 +54,7 @@ public:
     if (!EnableLocalAccessor)
       return false;
 
-    auto AT = StringSwitch<ArchType>(M.getTargetTriple().c_str())
-                  .Case("nvptx64-nvidia-cuda", ArchType::Cuda)
-                  .Case("nvptx-nvidia-cuda", ArchType::Cuda)
-                  .Case("amdgcn-amd-amdhsa", ArchType::AMDHSA)
-                  .Default(ArchType::Unsupported);
+    auto AT = SYCLLowerIRTargetHelpers::getArchType(M);
 
     // Invariant: This pass is only intended to operate on SYCL kernels being
     // compiled to either `nvptx{,64}-nvidia-cuda`, or `amdgcn-amd-amdhsa`
@@ -74,23 +65,11 @@ public:
     if (skipModule(M))
       return false;
 
-    switch (AT) {
-    case ArchType::Cuda:
-      // ADDRESS_SPACE_SHARED = 3,
-      SharedASValue = 3;
-      break;
-    case ArchType::AMDHSA:
-      // LOCAL_ADDRESS = 3,
-      SharedASValue = 3;
-      break;
-    default:
-      SharedASValue = 0;
-      break;
-    }
+    SharedASValue = getArchSharedASValue(AT);
 
     SmallVector<KernelPayload> Kernels;
+    SYCLLowerIRTargetHelpers::populateKernels(M, Kernels, AT);
     SmallVector<std::pair<Function *, KernelPayload>> NewToOldKernels;
-    populateKernels(M, Kernels, AT);
     if (Kernels.empty())
       return false;
 
@@ -238,61 +217,6 @@ private:
     F->eraseFromParent();
 
     return NF;
-  }
-
-  void populateCudaKernels(Module &M, SmallVector<KernelPayload> &Kernels) {
-    // Access `nvvm.annotations` to determine which functions are kernel entry
-    // points.
-    auto *NvvmMetadata = M.getNamedMetadata("nvvm.annotations");
-    if (!NvvmMetadata)
-      return;
-
-    for (auto *MetadataNode : NvvmMetadata->operands()) {
-      if (MetadataNode->getNumOperands() != 3)
-        continue;
-
-      // NVPTX identifies kernel entry points using metadata nodes of the form:
-      //   !X = !{<function>, !"kernel", i32 1}
-      const MDOperand &TypeOperand = MetadataNode->getOperand(1);
-      auto *Type = dyn_cast<MDString>(TypeOperand);
-      if (!Type)
-        continue;
-      // Only process kernel entry points.
-      if (Type->getString() != "kernel")
-        continue;
-
-      // Get a pointer to the entry point function from the metadata.
-      const MDOperand &FuncOperand = MetadataNode->getOperand(0);
-      if (!FuncOperand)
-        continue;
-      auto *FuncConstant = dyn_cast<ConstantAsMetadata>(FuncOperand);
-      if (!FuncConstant)
-        continue;
-      auto *Func = dyn_cast<Function>(FuncConstant->getValue());
-      if (!Func)
-        continue;
-
-      Kernels.push_back(KernelPayload(Func, MetadataNode));
-    }
-  }
-
-  void populateAMDKernels(Module &M, SmallVector<KernelPayload> &Kernels) {
-    for (auto &F : M) {
-      if (F.getCallingConv() == CallingConv::AMDGPU_KERNEL)
-        Kernels.push_back(KernelPayload(&F));
-    }
-  }
-
-  void populateKernels(Module &M, SmallVector<KernelPayload> &Kernels,
-                       ArchType AT) {
-    switch (AT) {
-    case ArchType::Cuda:
-      return populateCudaKernels(M, Kernels);
-    case ArchType::AMDHSA:
-      return populateAMDKernels(M, Kernels);
-    default:
-      llvm_unreachable("Unsupported arch type.");
-    }
   }
 
   void postProcessCudaKernels(
