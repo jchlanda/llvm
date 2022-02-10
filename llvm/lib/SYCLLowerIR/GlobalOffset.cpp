@@ -45,6 +45,7 @@ public:
     if (skipModule(M))
       return false;
 
+    M.dump();
     AT = getArchType(M);
     llvm::Function *ImplicitOffsetIntrinsic = M.getFunction(Intrinsic::getName(
         AT == ArchType::Cuda ? Intrinsic::nvvm_implicit_offset
@@ -188,6 +189,12 @@ public:
 
       if (!CalleeWithImplicitParam) {
         // Replace intrinsic call with parameter.
+        printf("------> 1\n");
+        printf("CallToOld:\n");
+        CallToOld->dump();
+        printf("ImplicitOffset:\n");
+        ImplicitOffset->dump();
+        printf("------\n");
         CallToOld->replaceAllUsesWith(ImplicitOffset);
       } else {
         // Build up a list of arguments to call the modified function using.
@@ -207,6 +214,12 @@ public:
             /* InsertBefore= */ CallToOld);
         NewCaller->setTailCallKind(CallToOld->getTailCallKind());
         NewCaller->copyMetadata(*CallToOld);
+        printf("------> 2\n");
+        printf("CallToOld:\n");
+        CallToOld->dump();
+        printf("NewCaller:\n");
+        NewCaller->dump();
+        printf("------\n");
         CallToOld->replaceAllUsesWith(NewCaller);
 
         if (CallToOld->hasName()) {
@@ -298,6 +311,12 @@ public:
                                   FuncEnd = Func->arg_end(),
                                   NewFuncArg = NewFunc->arg_begin();
            FuncArg != FuncEnd; ++FuncArg, ++NewFuncArg) {
+        printf("------> 3\n");
+        printf("FuncArg:\n");
+        FuncArg->dump();
+        printf("NewFuncArg:\n");
+        NewFuncArg->dump();
+        printf("------\n");
         FuncArg->replaceAllUsesWith(NewFuncArg);
       }
 
