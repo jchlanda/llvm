@@ -26,6 +26,7 @@ ArchType getArchType(const Module &M) {
       .Case("nvptx64-nvidia-cuda", ArchType::Cuda)
       .Case("nvptx-nvidia-cuda", ArchType::Cuda)
       .Case("amdgcn-amd-amdhsa", ArchType::AMDHSA)
+      .Case("amdgcn--amdhsa", ArchType::AMDHSA)
       .Default(ArchType::Unsupported);
 }
 

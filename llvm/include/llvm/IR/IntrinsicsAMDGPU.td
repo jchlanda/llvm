@@ -2020,5 +2020,5 @@ def int_amdgcn_reloc_constant : Intrinsic<
 
 // SYCL
 def int_amdgcn_implicit_offset : GCCBuiltin<"__builtin_amdgcn_implicit_offset">,
-  Intrinsic<[LLVMPointerType<llvm_i32_ty>], [], [IntrNoMem, IntrSpeculatable]>;
+  Intrinsic<[LLVMQualPointerType<llvm_i32_ty, 5>], [], [IntrNoMem, IntrSpeculatable]>;
 }

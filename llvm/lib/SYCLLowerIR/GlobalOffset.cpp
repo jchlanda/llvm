@@ -45,7 +45,7 @@ public:
     if (skipModule(M))
       return false;
 
-    M.dump();
+    //M.dump();
     AT = getArchType(M);
     llvm::Function *ImplicitOffsetIntrinsic = M.getFunction(Intrinsic::getName(
         AT == ArchType::Cuda ? Intrinsic::nvvm_implicit_offset
@@ -55,9 +55,15 @@ public:
       return false;
     }
 
+    TargetAS = AT == ArchType::Cuda ? 0 : 5;
     KernelImplicitArgumentType =
         ArrayType::get(Type::getInt32Ty(M.getContext()), 3);
-    ImplicitOffsetPtrType = Type::getInt32Ty(M.getContext())->getPointerTo();
+    ImplicitOffsetPtrType = Type::getInt32Ty(M.getContext())->getPointerTo(TargetAS);
+
+    //printf("--> ImplicitOffsetIntrinsic: \n");
+    //ImplicitOffsetIntrinsic->dump();
+    //printf("--> ImplicitOffsetPtrType: \n");
+    //ImplicitOffsetPtrType->dump();
     assert(
         (!ImplicitOffsetIntrinsic ||
          ImplicitOffsetIntrinsic->getReturnType() == ImplicitOffsetPtrType) &&
@@ -78,6 +84,7 @@ public:
            "Not all uses of intrinsic removed");
     ImplicitOffsetIntrinsic->eraseFromParent();
 
+    //M.dump();
     return true;
   }
 
@@ -117,7 +124,9 @@ public:
     IRBuilder<> Builder(EntryBlock, EntryBlock->getFirstInsertionPt());
     Type *ImplicitOffsetType =
         ArrayType::get(Type::getInt32Ty(M.getContext()), 3);
-    AllocaInst *ImplicitOffset = Builder.CreateAlloca(ImplicitOffsetType);
+    //printf("--> ImplicitOffsetType: \n");
+    //ImplicitOffsetType->dump();
+    AllocaInst *ImplicitOffset = Builder.CreateAlloca(ImplicitOffsetType, TargetAS, nullptr, "zeros_alloca");
     uint64_t AllocByteSize =
         ImplicitOffset->getAllocationSizeInBits(M.getDataLayout()).getValue() /
         8;
@@ -128,6 +137,11 @@ public:
     MemsetCall->addDereferenceableParamAttr(0, AllocByteSize);
     ProcessedFunctions[Func] = Builder.CreateConstInBoundsGEP2_32(
         ImplicitOffsetType, ImplicitOffset, 0, 0);
+
+    //printf("--> ImplicitOffset: \n");
+    //ImplicitOffset->dump();
+    //printf("------> WOOOF:\n");
+    //ProcessedFunctions[Func]->dump();
   }
 
   // This function adds an implicit parameter to the function containing a call
@@ -189,13 +203,14 @@ public:
 
       if (!CalleeWithImplicitParam) {
         // Replace intrinsic call with parameter.
-        printf("------> 1\n");
-        printf("CallToOld:\n");
-        CallToOld->dump();
-        printf("ImplicitOffset:\n");
-        ImplicitOffset->dump();
-        printf("------\n");
+        //printf("------> 1\n");
+        //printf("CallToOld:\n");
+        //CallToOld->dump();
+        //printf("ImplicitOffset:\n");
+        //ImplicitOffset->dump();
+        //printf("------1\n");
         CallToOld->replaceAllUsesWith(ImplicitOffset);
+        //printf("------2\n");
       } else {
         // Build up a list of arguments to call the modified function using.
         llvm::SmallVector<Value *, 8> ImplicitOffsets;
@@ -214,12 +229,12 @@ public:
             /* InsertBefore= */ CallToOld);
         NewCaller->setTailCallKind(CallToOld->getTailCallKind());
         NewCaller->copyMetadata(*CallToOld);
-        printf("------> 2\n");
-        printf("CallToOld:\n");
-        CallToOld->dump();
-        printf("NewCaller:\n");
-        NewCaller->dump();
-        printf("------\n");
+        //printf("------> 2\n");
+        //printf("CallToOld:\n");
+        //CallToOld->dump();
+        //printf("NewCaller:\n");
+        //NewCaller->dump();
+        //printf("------\n");
         CallToOld->replaceAllUsesWith(NewCaller);
 
         if (CallToOld->hasName()) {
@@ -332,8 +347,19 @@ public:
     if (ImplicitArgumentType != ImplicitOffsetPtrType) {
       BasicBlock *EntryBlock = &NewFunc->getEntryBlock();
       IRBuilder<> Builder(EntryBlock, EntryBlock->getFirstInsertionPt());
+//      printf("---> ImplicitOffsetBitcast\n");
+//      printf("---> ImplicitOffset:\n");
+//      ImplicitOffset->dump();
+//      printf("---> ImplicitOffsetPtrType:\n");
+//      ImplicitOffsetPtrType->dump();
+    
       ImplicitOffset =
-          Builder.CreateBitCast(ImplicitOffset, ImplicitOffsetPtrType);
+          Builder.CreateBitCast(ImplicitOffset, Type::getInt32Ty(M.getContext())->getPointerTo());
+      if (AT == ArchType::AMDHSA)
+        ImplicitOffset = Builder.CreateAddrSpaceCast(ImplicitOffset, ImplicitOffsetPtrType);
+//      printf("---> ImplicitOffset Bitcast:\n");
+//      ImplicitOffset->dump();
+//      printf("<---\n");
     }
 
     ProcessedFunctions[NewFunc] = ImplicitOffset;
@@ -358,8 +384,8 @@ public:
 
     llvm::DenseMap<Function *, MDNode *> EntryPointMetadata;
     for (auto &KP : KernelPayloads) {
-      KP.Kernel->dump();
-      KP.MD->dump();
+//      KP.Kernel->dump();
+//      KP.MD->dump();
       if (HasUseOtherThanLLVMUsed(KP.Kernel))
         llvm_unreachable("Kernel entry point can't have uses.");
 
@@ -382,6 +408,7 @@ private:
   llvm::Type *ImplicitOffsetPtrType;
 
   SYCLLowerIRTargetHelpers::ArchType AT;
+  unsigned TargetAS = 0;
 };
 
 } // end anonymous namespace

@@ -9353,10 +9353,7 @@ void AMDGPUTargetCodeGenInfo::setTargetAttributes(
   if (IsHIPKernel)
     F->addFnAttr("uniform-work-group-size", "true");
 
-  const bool IsSYCLKernel =
-      M.getLangOpts().SYCLIsDevice && FD && FD->hasAttr<CUDAGlobalAttr>();
-
-  if (IsSYCLKernel)
+  if (M.getLangOpts().SYCLIsDevice)
     addAMDGCNMetadata(F, "kernel", 1);
 
   if (M.getContext().getTargetInfo().allowAMDGPUUnsafeFPAtomics())

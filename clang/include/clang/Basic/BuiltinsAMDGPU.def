@@ -299,7 +299,7 @@ TARGET_BUILTIN(__builtin_amdgcn_mfma_f64_16x16x4f64, "V4dddV4dIiIiIi", "nc", "ma
 TARGET_BUILTIN(__builtin_amdgcn_mfma_f64_4x4x4f64, "ddddIiIiIi", "nc", "mai-insts")
 
 // SYCL
-BUILTIN(__builtin_amdgcn_implicit_offset, "Ui*", "nc")
+BUILTIN(__builtin_amdgcn_implicit_offset, "Ui*5", "nc")
 
 #undef BUILTIN
 #undef TARGET_BUILTIN

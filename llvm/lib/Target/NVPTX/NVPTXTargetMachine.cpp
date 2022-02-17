@@ -65,7 +65,6 @@ static cl::opt<bool> UseShortPointersOpt(
 
 namespace llvm {
 
-void initializeLocalAccessorToSharedMemoryPass(PassRegistry &);
 void initializeNVVMIntrRangePass(PassRegistry&);
 void initializeNVVMReflectPass(PassRegistry&);
 void initializeGenericToNVVMPass(PassRegistry&);

@@ -18,8 +18,8 @@
 
 // TODO: implement proper support for global offsets, this also requires
 // changes in the compiler and the HIP plugin.
-_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_x() { return 0; }
-
-_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_y() { return 0; }
-
-_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_z() { return 0; }
+//_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_x() { return 0; }
+//
+//_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_y() { return 0; }
+//
+//_CLC_DEF _CLC_OVERLOAD size_t __spirv_GlobalOffset_z() { return 0; }
