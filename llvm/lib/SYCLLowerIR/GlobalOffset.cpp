@@ -8,7 +8,7 @@
 //
 // TODO: JKB:
 // This pass operates on SYCL kernels being compiled to CUDA. It looks for uses
-// of the `llvm.nvvm.implicit.offset` intrinsic and replaces it with a offset
+// of the `llvm.nvvm.implicit.offset` intrinsic and replaces it with an offset
 // parameter which will be threaded through from the kernel entry point.
 //
 //===----------------------------------------------------------------------===//
@@ -55,7 +55,8 @@ public:
       return false;
     }
 
-    TargetAS = AT == ArchType::Cuda ? 0 : 5;
+    // TODO: JKB: Change to a helper?
+    TargetAS = AT == ArchType::Cuda ? 0 : 4;
     KernelImplicitArgumentType =
         ArrayType::get(Type::getInt32Ty(M.getContext()), 3);
     ImplicitOffsetPtrType = Type::getInt32Ty(M.getContext())->getPointerTo(TargetAS);
@@ -111,7 +112,7 @@ public:
     Argument *NewArgument = NewFunc->arg_begin() + (NewFunc->arg_size() - 1);
     // Pass the values by value to the kernel
     NewArgument->addAttr(
-        Attribute::getWithByValType(Ctx, KernelImplicitArgumentType));
+        Attribute::getWithByRefType(Ctx, KernelImplicitArgumentType));
 
     // Add the metadata.
     Metadata *NewMetadata[] = {ConstantAsMetadata::get(NewFunc),

@@ -13,30 +13,30 @@ target datalayout = "e-p:64:64-p1:64:64-p2:32:32-p3:32:32-p4:64:64-p5:32:32-p6:3
 #endif
 
 ; Function Attrs: nounwind readnone speculatable
-declare i32 addrspace(5)* @llvm.amdgcn.implicit.offset()
+declare i32 addrspace(4)* @llvm.amdgcn.implicit.offset()
 
 define hidden i64 @_Z22__spirv_GlobalOffset_xv() nounwind alwaysinline {
 entry:
-  %0 = tail call i32 addrspace(5)* @llvm.amdgcn.implicit.offset()
-  %1 = load i32, i32 addrspace(5)* %0, align 4
+  %0 = tail call i32 addrspace(4)* @llvm.amdgcn.implicit.offset()
+  %1 = load i32, i32 addrspace(4)* %0, align 4
   %zext = zext i32 %1 to i64
   ret i64 %zext
 }
 
 define hidden i64 @_Z22__spirv_GlobalOffset_yv() nounwind alwaysinline {
 entry:
-  %0 = tail call i32 addrspace(5)* @llvm.amdgcn.implicit.offset()
-  %arrayidx = getelementptr inbounds i32, i32 addrspace(5)* %0, i64 1
-  %1 = load i32, i32 addrspace(5)* %arrayidx, align 4
+  %0 = tail call i32 addrspace(4)* @llvm.amdgcn.implicit.offset()
+  %arrayidx = getelementptr inbounds i32, i32 addrspace(4)* %0, i64 1
+  %1 = load i32, i32 addrspace(4)* %arrayidx, align 4
   %zext = zext i32 %1 to i64
   ret i64 %zext
 }
 
 define hidden i64 @_Z22__spirv_GlobalOffset_zv() nounwind alwaysinline {
 entry:
-  %0 = tail call i32 addrspace(5)* @llvm.amdgcn.implicit.offset()
-  %arrayidx = getelementptr inbounds i32, i32 addrspace(5)* %0, i64 2
-  %1 = load i32, i32 addrspace(5)* %arrayidx, align 4
+  %0 = tail call i32 addrspace(4)* @llvm.amdgcn.implicit.offset()
+  %arrayidx = getelementptr inbounds i32, i32 addrspace(4)* %0, i64 2
+  %1 = load i32, i32 addrspace(4)* %arrayidx, align 4
   %zext = zext i32 %1 to i64
   ret i64 %zext
 }

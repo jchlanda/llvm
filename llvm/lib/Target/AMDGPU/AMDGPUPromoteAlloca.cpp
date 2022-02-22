@@ -516,12 +516,15 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
       if (Inst->getType() == AllocaTy || Inst->getType()->isVectorTy())
         break;
 
-      Value *Ptr = cast<LoadInst>(Inst)->getPointerOperand();
+      LoadInst *Load = cast<LoadInst>(Inst);
+      Value *Ptr = Load->getPointerOperand();
+      unsigned AS = Load->getPointerAddressSpace();
+      assert((AS == AMDGPUAS::CONSTANT_ADDRESS || AS == AMDGPUAS::PRIVATE_ADDRESS) && "Unsupported address space.");
       Value *Index = calculateVectorIndex(Ptr, GEPVectorIdx);
       if (!Index)
         break;
 
-      Type *VecPtrTy = VectorTy->getPointerTo(AMDGPUAS::PRIVATE_ADDRESS);
+      Type *VecPtrTy = VectorTy->getPointerTo(AS);
       Value *BitCast = Builder.CreateBitCast(Alloca, VecPtrTy);
       Value *VecValue = Builder.CreateLoad(VectorTy, BitCast);
       Value *ExtractElement = Builder.CreateExtractElement(VecValue, Index);
@@ -542,7 +545,9 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
       if (!Index)
         break;
 
-      Type *VecPtrTy = VectorTy->getPointerTo(AMDGPUAS::PRIVATE_ADDRESS);
+      unsigned AS = SI->getPointerAddressSpace();
+      assert((AS == AMDGPUAS::CONSTANT_ADDRESS || AS == AMDGPUAS::PRIVATE_ADDRESS) && "Unsupported address space.");
+      Type *VecPtrTy = VectorTy->getPointerTo(AS);
       Value *BitCast = Builder.CreateBitCast(Alloca, VecPtrTy);
       Value *VecValue = Builder.CreateLoad(VectorTy, BitCast);
       Value *Elt = SI->getValueOperand();

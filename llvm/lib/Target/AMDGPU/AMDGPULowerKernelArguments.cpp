@@ -56,11 +56,9 @@ static BasicBlock::iterator getInsertPt(BasicBlock &BB) {
 }
 
 bool AMDGPULowerKernelArguments::runOnFunction(Function &F) {
-  LLVM_DEBUG(dbgs() << "--> WOOOF: F.name(): " << F.getName().str().c_str());
   CallingConv::ID CC = F.getCallingConv();
   if (CC != CallingConv::AMDGPU_KERNEL || F.arg_empty())
     return false;
-  LLVM_DEBUG(dbgs() << "--> 1");
 
   auto &TPC = getAnalysis<TargetPassConfig>();
 
@@ -79,7 +77,6 @@ bool AMDGPULowerKernelArguments::runOnFunction(Function &F) {
   const uint64_t TotalKernArgSize = ST.getKernArgSegmentSize(F, MaxAlign);
   if (TotalKernArgSize == 0)
     return false;
-  LLVM_DEBUG(dbgs() << "--> 2");
 
   CallInst *KernArgSegment =
       Builder.CreateIntrinsic(Intrinsic::amdgcn_kernarg_segment_ptr, {}, {},
@@ -237,8 +234,6 @@ bool AMDGPULowerKernelArguments::runOnFunction(Function &F) {
 
   KernArgSegment->addRetAttr(
       Attribute::getWithAlignment(Ctx, std::max(KernArgBaseAlign, MaxAlign)));
-
-  printf("--> 3\n");
 
   return true;
 }
