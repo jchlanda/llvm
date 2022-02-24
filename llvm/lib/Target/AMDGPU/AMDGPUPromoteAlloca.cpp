@@ -519,6 +519,7 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
       LoadInst *Load = cast<LoadInst>(Inst);
       Value *Ptr = Load->getPointerOperand();
       unsigned AS = Load->getPointerAddressSpace();
+      // TODO: JKB: Use module metadata to ensure that the load belongs to a kernel.
       assert((AS == AMDGPUAS::CONSTANT_ADDRESS || AS == AMDGPUAS::PRIVATE_ADDRESS) && "Unsupported address space.");
       Value *Index = calculateVectorIndex(Ptr, GEPVectorIdx);
       if (!Index)

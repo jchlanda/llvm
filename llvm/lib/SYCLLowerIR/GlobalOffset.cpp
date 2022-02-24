@@ -110,9 +110,11 @@ public:
                         /*KeepOriginal=*/true)
                         .first;
     Argument *NewArgument = NewFunc->arg_begin() + (NewFunc->arg_size() - 1);
-    // Pass the values by value to the kernel
-    NewArgument->addAttr(
-        Attribute::getWithByRefType(Ctx, KernelImplicitArgumentType));
+    // Pass byval to the kernel for NVIDIA, AMD's calling convention disallows byval args, use byref.
+    auto Attr = AT == ArchType::Cuda 
+        ? Attribute::getWithByValType(Ctx, KernelImplicitArgumentType)
+        : Attribute::getWithByRefType(Ctx, KernelImplicitArgumentType);
+    NewArgument->addAttr(Attr);
 
     // Add the metadata.
     Metadata *NewMetadata[] = {ConstantAsMetadata::get(NewFunc),
@@ -127,7 +129,7 @@ public:
         ArrayType::get(Type::getInt32Ty(M.getContext()), 3);
     //printf("--> ImplicitOffsetType: \n");
     //ImplicitOffsetType->dump();
-    AllocaInst *ImplicitOffset = Builder.CreateAlloca(ImplicitOffsetType, TargetAS, nullptr, "zeros_alloca");
+    AllocaInst *ImplicitOffset = Builder.CreateAlloca(ImplicitOffsetType, TargetAS);
     uint64_t AllocByteSize =
         ImplicitOffset->getAllocationSizeInBits(M.getDataLayout()).getValue() /
         8;

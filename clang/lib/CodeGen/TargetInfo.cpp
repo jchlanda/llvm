@@ -9349,11 +9349,12 @@ void AMDGPUTargetCodeGenInfo::setTargetAttributes(
 
   const bool IsHIPKernel =
       M.getLangOpts().HIP && FD && FD->hasAttr<CUDAGlobalAttr>();
-
   if (IsHIPKernel)
     F->addFnAttr("uniform-work-group-size", "true");
 
-  if (M.getLangOpts().SYCLIsDevice)
+  const bool IsSYCLKernel =
+      FD && M.getLangOpts().SYCLIsDevice && F->getCallingConv() == llvm::CallingConv::AMDGPU_KERNEL;
+  if (IsSYCLKernel)
     addAMDGCNMetadata(F, "kernel", 1);
 
   if (M.getContext().getTargetInfo().allowAMDGPUUnsafeFPAtomics())
