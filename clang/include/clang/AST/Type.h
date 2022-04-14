@@ -470,6 +470,10 @@ public:
     Mask |= qs.Mask;
   }
 
+  /// Languages can have different address space semantics, especially with
+  /// regards to which AS are consider to be overlapping. ASOffload specifies
+  /// the target language in which the address space was used.
+  enum class ASOffload { OpenCL, SYCL, None };
   /// Returns true if address space A is equal to or a superset of B.
   /// OpenCL v2.0 defines conversion rules (OpenCLC v2.0 s6.5.5) and notion of
   /// overlapping address spaces.
@@ -477,7 +481,62 @@ public:
   ///   every address space is a superset of itself.
   /// CL2.0 adds:
   ///   __generic is a superset of any address space except for __constant.
-  static bool isAddressSpaceSupersetOf(LangAS A, LangAS B) {
+  /// If ASMap is provided and address spaces are given in both language and
+  /// target form the function will attempt to convert language to target
+  /// address space.
+  static bool isAddressSpaceSupersetOf(LangAS A, LangAS B,
+                                       const LangASMap *ASMap = nullptr,
+                                       ASOffload ASO = ASOffload::None) {
+    if (ASMap) {
+      const bool IsATargetAS = isTargetAddressSpace(A);
+      const bool IsBTargetAS = isTargetAddressSpace(B);
+      // Do not attempt conversion if both values are expressed in the same
+      // way (only work on mixed, languate and target AS).
+      if (IsATargetAS ^ IsBTargetAS) {
+        if (!IsATargetAS)
+          A = getLangASFromTargetAS((*ASMap)[static_cast<unsigned>(A)]);
+        else
+          B = getLangASFromTargetAS((*ASMap)[static_cast<unsigned>(B)]);
+        // In OpenCL and SYCL apply the same rules of address space supersets
+        // as when dealing with language only values, for other cases only
+        // return true if both values match exactly.
+        if (ASOffload::OpenCL == ASO) {
+          LangAS Generic = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::opencl_generic)]);
+          LangAS Constant = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::opencl_constant)]);
+          LangAS Global = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::opencl_global)]);
+          LangAS GlobalDevice = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::opencl_global_device)]);
+          LangAS GlobalHost = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::opencl_global_host)]);
+          return A == B ||
+                 (A == Generic && B != Constant && Generic != Constant) ||
+                 (A == Global && (B == GlobalDevice || B == GlobalHost));
+        }
+        if (ASOffload::SYCL == ASO) {
+          LangAS Default = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::Default)]);
+          LangAS Global = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::sycl_global)]);
+          LangAS GlobalDevice = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::sycl_global_device)]);
+          LangAS GlobalHost = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::sycl_global_host)]);
+          LangAS Private = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::sycl_private)]);
+          LangAS Local = getLangASFromTargetAS(
+              (*ASMap)[static_cast<unsigned>(LangAS::sycl_local)]);
+          return A == B ||
+                 (A == Global && (B == GlobalDevice || B == GlobalHost)) ||
+                 (A == Default && (B == Private || B == Local || B == Global ||
+                                   B == GlobalDevice || B == GlobalHost));
+        }
+        return A == B;
+      }
+    }
+
     // Address spaces must match exactly.
     return A == B ||
            // Otherwise in OpenCLC v2.0 s6.5.5: every address space except
@@ -514,8 +573,10 @@ public:
   /// Determines if these qualifiers compatibly include another set.
   /// Generally this answers the question of whether an object with the other
   /// qualifiers can be safely used as an object with these qualifiers.
-  bool compatiblyIncludes(Qualifiers other) const {
-    return isAddressSpaceSupersetOf(other) &&
+  bool compatiblyIncludes(Qualifiers other, const LangASMap *ASMap = nullptr,
+                          ASOffload ASO = ASOffload::None) {
+    return isAddressSpaceSupersetOf(this->getAddressSpace(),
+                                    other.getAddressSpace(), ASMap, ASO) &&
            // ObjC GC qualifiers can match, be added, or be removed, but can't
            // be changed.
            (getObjCGCAttr() == other.getObjCGCAttr() || !hasObjCGCAttr() ||

@@ -9234,17 +9234,33 @@ checkPointerTypesForAssignment(Sema &S, QualType LHSType, QualType RHSType) {
     rhq.removeObjCLifetime();
   }
 
-  if (!lhq.compatiblyIncludes(rhq)) {
+  auto ASO = clang::Qualifiers::ASOffload::None;
+  if (S.getLangOpts().OpenCL)
+    ASO = clang::Qualifiers::ASOffload::OpenCL;
+  else if (S.getLangOpts().SYCLIsDevice)
+    ASO = clang::Qualifiers::ASOffload::SYCL;
+
+  const LangASMap &ASMap = S.Context.getTargetInfo().getAddressSpaceMap();
+  if (!lhq.compatiblyIncludes(rhq, &ASMap, ASO)) {
+    const bool AddressSpaceSuperset = Qualifiers::isAddressSpaceSupersetOf(
+        lhq.getAddressSpace(), rhq.getAddressSpace(), &ASMap, ASO);
+
     // Treat address-space mismatches as fatal.
-    if (!lhq.isAddressSpaceSupersetOf(rhq))
+    if (!AddressSpaceSuperset)
       return Sema::IncompatiblePointerDiscardsQualifiers;
+
+    // In OpenCL/SYCL don't issue discard qualifier warning if address spaces
+    // overlap.
+    else if (AddressSpaceSuperset &&
+             (ASO == clang::Qualifiers::ASOffload::OpenCL ||
+              ASO == clang::Qualifiers::ASOffload::SYCL))
+      ; // keep Compatible
 
     // It's okay to add or remove GC or lifetime qualifiers when converting to
     // and from void*.
-    else if (lhq.withoutObjCGCAttr().withoutObjCLifetime()
-                        .compatiblyIncludes(
-                                rhq.withoutObjCGCAttr().withoutObjCLifetime())
-             && (lhptee->isVoidType() || rhptee->isVoidType()))
+    else if (lhq.withoutObjCGCAttr().withoutObjCLifetime().compatiblyIncludes(
+                 rhq.withoutObjCGCAttr().withoutObjCLifetime()) &&
+             (lhptee->isVoidType() || rhptee->isVoidType()))
       ; // keep old
 
     // Treat lifetime mismatches as fatal.
