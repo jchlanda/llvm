@@ -15,6 +15,7 @@
 #include <CL/sycl/detail/type_traits.hpp>
 
 #include <CL/__spirv/spirv_ops.hpp>
+#include <sycl/ext/oneapi/experimental/bfloat16.hpp>
 
 // TODO Decide whether to mark functions with this attribute.
 #define __NOEXC /*noexcept*/
@@ -26,10 +27,7 @@
 #endif
 
 __SYCL_INLINE_NAMESPACE(cl) {
-namespace sycl {
-namespace ext {
-namespace oneapi {
-namespace experimental {
+namespace sycl::ext::oneapi::experimental {
 
 // Provides functionality to print data from kernels in a C way:
 // - On non-host devices this function is directly mapped to printf from
@@ -117,11 +115,230 @@ inline __SYCL_ALWAYS_INLINE
 
 } // namespace native
 
-} // namespace experimental
-} // namespace oneapi
-} // namespace ext
+namespace detail {
 
-} // namespace sycl
+template <typename T> struct is_bf16_storage_type {
+  static constexpr int value = false;
+};
+
+template <> struct is_bf16_storage_type<uint16_t> {
+  static constexpr int value = true;
+};
+
+template <> struct is_bf16_storage_type<uint32_t> {
+  static constexpr int value = true;
+};
+
+template <int N> struct is_bf16_storage_type<vec<uint16_t, N>> {
+  static constexpr int value = true;
+};
+
+template <int N> struct is_bf16_storage_type<vec<uint32_t, N>> {
+  static constexpr int value = true;
+};
+
+} // namespace detail
+
+template <typename T>
+std::enable_if_t<experimental::detail::is_bf16_storage_type<T>::value, T>
+fabs(T x) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return __clc_fabs(x);
+#else
+  (void)x;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fabs(T x) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return bfloat16::from_bits(__clc_fabs(x.raw()));
+#else
+  (void)x;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T, size_t N>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+fabs(sycl::marray<T, N> x) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  sycl::marray<bfloat16, N> res;
+  auto x_storage = reinterpret_cast<uint32_t const *>(&x);
+  auto res_storage = reinterpret_cast<uint32_t *>(&res);
+
+  for (size_t i = 0; i < N / 2; i++)
+    res_storage[i] = __clc_fabs(x_storage[i]);
+
+  if constexpr (N % 2) {
+    res[N - 1] = bfloat16::from_bits(__clc_fabs(x[N - 1].raw()));
+  }
+  return res;
+#else
+  (void)x;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<experimental::detail::is_bf16_storage_type<T>::value, T>
+fmin(T x, T y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return __clc_fmin(x, y);
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmin(T x, T y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return bfloat16::from_bits(__clc_fmin(x.raw(), y.raw()));
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T, size_t N>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+fmin(sycl::marray<T, N> x, sycl::marray<T, N> y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  sycl::marray<bfloat16, N> res;
+  auto x_storage = reinterpret_cast<uint32_t const *>(&x);
+  auto y_storage = reinterpret_cast<uint32_t const *>(&y);
+  auto res_storage = reinterpret_cast<uint32_t *>(&res);
+
+  for (size_t i = 0; i < N / 2; i++)
+    res_storage[i] = __clc_fmin(x_storage[i], y_storage[i]);
+
+  if constexpr (N % 2) {
+    res[N - 1] =
+        bfloat16::from_bits(__clc_fmin(x[N - 1].raw(), y[N - 1].raw()));
+  }
+
+  return res;
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<experimental::detail::is_bf16_storage_type<T>::value, T>
+fmax(T x, T y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return __clc_fmax(x, y);
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmax(T x, T y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return bfloat16::from_bits(__clc_fmax(x.raw(), y.raw()));
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T, size_t N>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+fmax(sycl::marray<T, N> x, sycl::marray<T, N> y) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  sycl::marray<bfloat16, N> res;
+  auto x_storage = reinterpret_cast<uint32_t const *>(&x);
+  auto y_storage = reinterpret_cast<uint32_t const *>(&y);
+  auto res_storage = reinterpret_cast<uint32_t *>(&res);
+
+  for (size_t i = 0; i < N / 2; i++)
+    res_storage[i] = __clc_fmax(x_storage[i], y_storage[i]);
+
+  if constexpr (N % 2) {
+    res[N - 1] =
+        bfloat16::from_bits(__clc_fmax(x[N - 1].raw(), y[N - 1].raw()));
+  }
+  return res;
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<experimental::detail::is_bf16_storage_type<T>::value, T>
+fma(T x, T y, T z) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return __clc_fma(x, y, z);
+#else
+  (void)x;
+  (void)y;
+  (void)z;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fma(T x, T y, T z) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  return bfloat16::from_bits(__clc_fma(x.raw(), y.raw(), z.raw()));
+#else
+  (void)x;
+  (void)y;
+  (void)z;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+template <typename T, size_t N>
+std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+fma(sycl::marray<T, N> x, sycl::marray<T, N> y, sycl::marray<T, N> z) {
+#if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+  sycl::marray<bfloat16, N> res;
+  auto x_storage = reinterpret_cast<uint32_t const *>(&x);
+  auto y_storage = reinterpret_cast<uint32_t const *>(&y);
+  auto z_storage = reinterpret_cast<uint32_t const *>(&z);
+  auto res_storage = reinterpret_cast<uint32_t *>(&res);
+
+  for (size_t i = 0; i < N / 2; i++)
+    res_storage[i] = __clc_fma(x_storage[i], y_storage[i], z_storage[i]);
+
+  if constexpr (N % 2) {
+    res[N - 1] = bfloat16::from_bits(
+        __clc_fma(x[N - 1].raw(), y[N - 1].raw(), z[N - 1].raw()));
+  }
+  return res;
+#else
+  (void)x;
+  (void)y;
+  throw runtime_error("bfloat16 is not currently supported on the host device.",
+                      PI_INVALID_DEVICE);
+#endif // defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
+}
+
+} // namespace sycl::ext::oneapi::experimental
 } // __SYCL_INLINE_NAMESPACE(cl)
 
 #undef __SYCL_CONSTANT_AS
