@@ -202,7 +202,7 @@ fabs(T x) {
 }
 
 template <typename T>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fabs(T x) {
+std::enable_if_t<std::is_same<T, bfloat16>::value, T> fabs(T x) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   return bfloat16::from_bits(__clc_fabs(x.raw()));
 #else
@@ -213,7 +213,7 @@ std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fabs(T x) {
 }
 
 template <typename T, size_t N>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+std::enable_if_t<std::is_same<T, bfloat16>::value, sycl::marray<T, N>>
 fabs(sycl::marray<T, N> x) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   sycl::marray<bfloat16, N> res;
@@ -248,7 +248,7 @@ fmin(T x, T y) {
 }
 
 template <typename T>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmin(T x, T y) {
+std::enable_if_t<std::is_same<T, bfloat16>::value, T> fmin(T x, T y) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   return bfloat16::from_bits(__clc_fmin(x.raw(), y.raw()));
 #else
@@ -260,7 +260,7 @@ std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmin(T x, T y) {
 }
 
 template <typename T, size_t N>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+std::enable_if_t<std::is_same<T, bfloat16>::value, sycl::marray<T, N>>
 fmin(sycl::marray<T, N> x, sycl::marray<T, N> y) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   sycl::marray<bfloat16, N> res;
@@ -299,7 +299,7 @@ fmax(T x, T y) {
 }
 
 template <typename T>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmax(T x, T y) {
+std::enable_if_t<std::is_same<T, bfloat16>::value, T> fmax(T x, T y) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   return bfloat16::from_bits(__clc_fmax(x.raw(), y.raw()));
 #else
@@ -311,7 +311,7 @@ std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fmax(T x, T y) {
 }
 
 template <typename T, size_t N>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+std::enable_if_t<std::is_same<T, bfloat16>::value, sycl::marray<T, N>>
 fmax(sycl::marray<T, N> x, sycl::marray<T, N> y) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   sycl::marray<bfloat16, N> res;
@@ -350,7 +350,7 @@ fma(T x, T y, T z) {
 }
 
 template <typename T>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fma(T x, T y, T z) {
+std::enable_if_t<std::is_same<T, bfloat16>::value, T> fma(T x, T y, T z) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   return bfloat16::from_bits(__clc_fma(x.raw(), y.raw(), z.raw()));
 #else
@@ -363,7 +363,7 @@ std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, T> fma(T x, T y, T z) {
 }
 
 template <typename T, size_t N>
-std::enable_if_t<sycl::detail::is_same_v<T, bfloat16>, sycl::marray<T, N>>
+std::enable_if_t<std::is_same<T, bfloat16>::value, sycl::marray<T, N>>
 fma(sycl::marray<T, N> x, sycl::marray<T, N> y, sycl::marray<T, N> z) {
 #if defined(__SYCL_DEVICE_ONLY__) && defined(__NVPTX__)
   sycl::marray<bfloat16, N> res;
