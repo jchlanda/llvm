@@ -25,12 +25,148 @@ namespace sycl {
 namespace __sycl_std = __host_std;
 #endif
 
+#ifdef __FAST_MATH__
+#define __FAST_MATH_GENFLOAT(T)                                                \
+  (detail::is_genfloatd<T>::value || detail::is_genfloath<T>::value)
+#else
+#define __FAST_MATH_GENFLOAT(T) (detail::is_genfloat<T>::value)
+#endif
+
 /* ----------------- 4.13.3 Math functions. ---------------------------------*/
 // genfloat acos (genfloat x)
 template <typename T>
 detail::enable_if_t<detail::is_genfloat<T>::value, T> acos(T x) __NOEXC {
   return __sycl_std::__invoke_acos<T>(x);
 }
+
+#define __SYCL_MATH_FUNCTION_OVERLOAD(NAME)                                    \
+  template <typename T, size_t N>                                              \
+  inline __SYCL_ALWAYS_INLINE std::enable_if_t<                                \
+      std::is_same<T, half>::value || std::is_same<T, float>::value ||         \
+          std::is_same<T, double>::value,                                      \
+      sycl::marray<T, N>>                                                      \
+  NAME(sycl::marray<T, N> x) __NOEXC {                                         \
+    sycl::marray<T, N> res;                                                    \
+    auto x_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&x);               \
+    auto res_vec2 = reinterpret_cast<sycl::vec<T, 2> *>(&res);                 \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] = __sycl_std::__invoke_##NAME<sycl::vec<T, 2>>(x_vec2[i]);   \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] = __sycl_std::__invoke_##NAME<T>(x[N - 1]);                   \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_MATH_FUNCTION_OVERLOAD(sin)
+__SYCL_MATH_FUNCTION_OVERLOAD(cos)
+__SYCL_MATH_FUNCTION_OVERLOAD(tan)
+__SYCL_MATH_FUNCTION_OVERLOAD(cospi)
+__SYCL_MATH_FUNCTION_OVERLOAD(sinpi)
+__SYCL_MATH_FUNCTION_OVERLOAD(tanpi)
+__SYCL_MATH_FUNCTION_OVERLOAD(sinh)
+__SYCL_MATH_FUNCTION_OVERLOAD(cosh)
+__SYCL_MATH_FUNCTION_OVERLOAD(tanh)
+__SYCL_MATH_FUNCTION_OVERLOAD(asin)
+__SYCL_MATH_FUNCTION_OVERLOAD(acos)
+__SYCL_MATH_FUNCTION_OVERLOAD(atan)
+__SYCL_MATH_FUNCTION_OVERLOAD(asinpi)
+__SYCL_MATH_FUNCTION_OVERLOAD(acospi)
+__SYCL_MATH_FUNCTION_OVERLOAD(atanpi)
+__SYCL_MATH_FUNCTION_OVERLOAD(asinh)
+__SYCL_MATH_FUNCTION_OVERLOAD(acosh)
+__SYCL_MATH_FUNCTION_OVERLOAD(atanh)
+__SYCL_MATH_FUNCTION_OVERLOAD(cbrt)
+__SYCL_MATH_FUNCTION_OVERLOAD(ceil)
+__SYCL_MATH_FUNCTION_OVERLOAD(floor)
+__SYCL_MATH_FUNCTION_OVERLOAD(erfc)
+__SYCL_MATH_FUNCTION_OVERLOAD(erf)
+__SYCL_MATH_FUNCTION_OVERLOAD(exp)
+__SYCL_MATH_FUNCTION_OVERLOAD(exp2)
+__SYCL_MATH_FUNCTION_OVERLOAD(exp10)
+__SYCL_MATH_FUNCTION_OVERLOAD(expm1)
+__SYCL_MATH_FUNCTION_OVERLOAD(tgamma)
+__SYCL_MATH_FUNCTION_OVERLOAD(lgamma)
+__SYCL_MATH_FUNCTION_OVERLOAD(log)
+__SYCL_MATH_FUNCTION_OVERLOAD(log2)
+__SYCL_MATH_FUNCTION_OVERLOAD(log10)
+__SYCL_MATH_FUNCTION_OVERLOAD(log1p)
+__SYCL_MATH_FUNCTION_OVERLOAD(logb)
+__SYCL_MATH_FUNCTION_OVERLOAD(rint)
+__SYCL_MATH_FUNCTION_OVERLOAD(round)
+__SYCL_MATH_FUNCTION_OVERLOAD(sqrt)
+__SYCL_MATH_FUNCTION_OVERLOAD(rsqrt)
+__SYCL_MATH_FUNCTION_OVERLOAD(trunc)
+
+#undef __SYCL_MATH_FUNCTION_OVERLOAD
+
+#define __SYCL_MATH_FUNCTION_2_OVERLOAD(NAME)                                  \
+  template <typename T, size_t N>                                              \
+  inline __SYCL_ALWAYS_INLINE std::enable_if_t<                                \
+      std::is_same<T, half>::value || std::is_same<T, float>::value ||         \
+          std::is_same<T, double>::value,                                      \
+      sycl::marray<T, N>>                                                      \
+  NAME(sycl::marray<T, N> x, sycl::marray<T, N> y) __NOEXC {                   \
+    sycl::marray<T, N> res;                                                    \
+    auto x_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&x);               \
+    auto y_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&y);               \
+    auto res_vec2 = reinterpret_cast<sycl::vec<T, 2> *>(&res);                 \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] =                                                            \
+          __sycl_std::__invoke_##NAME<sycl::vec<T, 2>>(x_vec2[i], y_vec2[i]);  \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] = __sycl_std::__invoke_##NAME<T>(x[N - 1], y[N - 1]);         \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_MATH_FUNCTION_2_OVERLOAD(atan2)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(atan2pi)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(copysign)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(fdim)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(fmin)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(fmax)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(fmod)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(hypot)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(maxmag)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(minmag)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(nextafter)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(pow)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(powr)
+__SYCL_MATH_FUNCTION_2_OVERLOAD(remainder)
+
+#undef __SYCL_MATH_FUNCTION_2_OVERLOAD
+
+#define __SYCL_MATH_FUNCTION_3_OVERLOAD(NAME)                                  \
+  template <typename T, size_t N>                                              \
+  inline __SYCL_ALWAYS_INLINE std::enable_if_t<                                \
+      std::is_same<T, half>::value || std::is_same<T, float>::value ||         \
+          std::is_same<T, double>::value,                                      \
+      sycl::marray<T, N>>                                                      \
+  NAME(sycl::marray<T, N> x, sycl::marray<T, N> y, sycl::marray<T, N> z)       \
+      __NOEXC {                                                                \
+    sycl::marray<T, N> res;                                                    \
+    auto x_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&x);               \
+    auto y_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&y);               \
+    auto z_vec2 = reinterpret_cast<sycl::vec<T, 2> const *>(&z);               \
+    auto res_vec2 = reinterpret_cast<sycl::vec<T, 2> *>(&res);                 \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] = __sycl_std::__invoke_##NAME<sycl::vec<T, 2>>(              \
+          x_vec2[i], y_vec2[i], z_vec2[i]);                                    \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] =                                                             \
+          __sycl_std::__invoke_##NAME<T>(x[N - 1], y[N - 1], z[N - 1]);        \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_MATH_FUNCTION_3_OVERLOAD(mad)
+__SYCL_MATH_FUNCTION_3_OVERLOAD(mix)
+__SYCL_MATH_FUNCTION_3_OVERLOAD(fma)
+
+#undef __SYCL_MATH_FUNCTION_3_OVERLOAD
 
 // genfloat acosh (genfloat x)
 template <typename T>
@@ -114,7 +250,7 @@ detail::enable_if_t<detail::is_genfloat<T>::value, T> copysign(T x,
 
 // genfloat cos (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> cos(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> cos(T x) __NOEXC {
   return __sycl_std::__invoke_cos<T>(x);
 }
 
@@ -144,19 +280,19 @@ detail::enable_if_t<detail::is_genfloat<T>::value, T> erf(T x) __NOEXC {
 
 // genfloat exp (genfloat x )
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> exp(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> exp(T x) __NOEXC {
   return __sycl_std::__invoke_exp<T>(x);
 }
 
 // genfloat exp2 (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> exp2(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> exp2(T x) __NOEXC {
   return __sycl_std::__invoke_exp2<T>(x);
 }
 
 // genfloat exp10 (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> exp10(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> exp10(T x) __NOEXC {
   return __sycl_std::__invoke_exp10<T>(x);
 }
 
@@ -296,19 +432,19 @@ lgamma_r(T x, T2 signp) __NOEXC {
 
 // genfloat log (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> log(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> log(T x) __NOEXC {
   return __sycl_std::__invoke_log<T>(x);
 }
 
 // genfloat log2 (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> log2(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> log2(T x) __NOEXC {
   return __sycl_std::__invoke_log2<T>(x);
 }
 
 // genfloat log10 (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> log10(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> log10(T x) __NOEXC {
   return __sycl_std::__invoke_log10<T>(x);
 }
 
@@ -383,7 +519,7 @@ pown(T x, T2 y) __NOEXC {
 
 // genfloat powr (genfloat x, genfloat y)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> powr(T x, T y) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> powr(T x, T y) __NOEXC {
   return __sycl_std::__invoke_powr<T>(x, y);
 }
 
@@ -426,13 +562,13 @@ detail::enable_if_t<detail::is_genfloat<T>::value, T> round(T x) __NOEXC {
 
 // genfloat rsqrt (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> rsqrt(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> rsqrt(T x) __NOEXC {
   return __sycl_std::__invoke_rsqrt<T>(x);
 }
 
 // genfloat sin (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> sin(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> sin(T x) __NOEXC {
   return __sycl_std::__invoke_sin<T>(x);
 }
 
@@ -459,13 +595,13 @@ detail::enable_if_t<detail::is_genfloat<T>::value, T> sinpi(T x) __NOEXC {
 
 // genfloat sqrt (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> sqrt(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> sqrt(T x) __NOEXC {
   return __sycl_std::__invoke_sqrt<T>(x);
 }
 
 // genfloat tan (genfloat x)
 template <typename T>
-detail::enable_if_t<detail::is_genfloat<T>::value, T> tan(T x) __NOEXC {
+detail::enable_if_t<__FAST_MATH_GENFLOAT(T), T> tan(T x) __NOEXC {
   return __sycl_std::__invoke_tan<T>(x);
 }
 
@@ -1388,6 +1524,63 @@ select(T a, T b, T2 c) __NOEXC {
 namespace native {
 /* ----------------- 4.13.3 Math functions. ---------------------------------*/
 // genfloatf cos (genfloatf x)
+
+#define __SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(NAME)                             \
+  template <size_t N>                                                          \
+  inline __SYCL_ALWAYS_INLINE sycl::marray<float, N> NAME(                     \
+      sycl::marray<float, N> x) __NOEXC {                                      \
+    sycl::marray<float, N> res;                                                \
+    auto x_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&x);           \
+    auto res_vec2 = reinterpret_cast<sycl::vec<float, 2> *>(&res);             \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] =                                                            \
+          __sycl_std::__invoke_native_##NAME<sycl::vec<float, 2>>(x_vec2[i]);  \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] = __sycl_std::__invoke_native_##NAME<float>(x[N - 1]);        \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(sin)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(cos)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(tan)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(exp)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(exp2)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(exp10)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(log)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(log2)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(log10)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(sqrt)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(rsqrt)
+__SYCL_NATIVE_MATH_FUNCTION_OVERLOAD(recip)
+
+#undef __SYCL_NATIVE_MATH_FUNCTION_OVERLOAD
+
+#define __SYCL_NATIVE_MATH_FUNCTION_2_OVERLOAD(NAME)                           \
+  template <size_t N>                                                          \
+  inline __SYCL_ALWAYS_INLINE sycl::marray<float, N> NAME(                     \
+      sycl::marray<float, N> x, sycl::marray<float, N> y) __NOEXC {            \
+    sycl::marray<float, N> res;                                                \
+    auto x_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&x);           \
+    auto y_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&y);           \
+    auto res_vec2 = reinterpret_cast<sycl::vec<float, 2> *>(&res);             \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] = __sycl_std::__invoke_native_##NAME<sycl::vec<float, 2>>(   \
+          x_vec2[i], y_vec2[i]);                                               \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] =                                                             \
+          __sycl_std::__invoke_native_##NAME<float>(x[N - 1], y[N - 1]);       \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_NATIVE_MATH_FUNCTION_2_OVERLOAD(divide)
+__SYCL_NATIVE_MATH_FUNCTION_2_OVERLOAD(powr)
+
+#undef __SYCL_NATIVE_MATH_FUNCTION_2_OVERLOAD
+
 template <typename T>
 detail::enable_if_t<detail::is_genfloatf<T>::value, T> cos(T x) __NOEXC {
   return __sycl_std::__invoke_native_cos<T>(x);
@@ -1475,6 +1668,62 @@ detail::enable_if_t<detail::is_genfloatf<T>::value, T> tan(T x) __NOEXC {
 } // namespace native
 namespace half_precision {
 /* ----------------- 4.13.3 Math functions. ---------------------------------*/
+#define __SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(NAME)                     \
+  template <size_t N>                                                          \
+  inline __SYCL_ALWAYS_INLINE sycl::marray<float, N> NAME(                     \
+      sycl::marray<float, N> x) __NOEXC {                                      \
+    sycl::marray<float, N> res;                                                \
+    auto x_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&x);           \
+    auto res_vec2 = reinterpret_cast<sycl::vec<float, 2> *>(&res);             \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] =                                                            \
+          __sycl_std::__invoke_half_##NAME<sycl::vec<float, 2>>(x_vec2[i]);    \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] = __sycl_std::__invoke_half_##NAME<float>(x[N - 1]);          \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(sin)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(cos)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(tan)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(exp)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(exp2)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(exp10)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(log)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(log2)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(log10)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(sqrt)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(rsqrt)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD(recip)
+
+#undef __SYCL_HALF_PRECISION_MATH_FUNCTION_OVERLOAD
+
+#define __SYCL_HALF_PRECISION_MATH_FUNCTION_2_OVERLOAD(NAME)                   \
+  template <size_t N>                                                          \
+  inline __SYCL_ALWAYS_INLINE sycl::marray<float, N> NAME(                     \
+      sycl::marray<float, N> x, sycl::marray<float, N> y) __NOEXC {            \
+    sycl::marray<float, N> res;                                                \
+    auto x_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&x);           \
+    auto y_vec2 = reinterpret_cast<sycl::vec<float, 2> const *>(&y);           \
+    auto res_vec2 = reinterpret_cast<sycl::vec<float, 2> *>(&res);             \
+    for (size_t i = 0; i < N / 2; i++) {                                       \
+      res_vec2[i] = __sycl_std::__invoke_half_##NAME<sycl::vec<float, 2>>(     \
+          x_vec2[i], y_vec2[i]);                                               \
+    }                                                                          \
+    if (N % 2) {                                                               \
+      res[N - 1] =                                                             \
+          __sycl_std::__invoke_half_##NAME<float>(x[N - 1], y[N - 1]);         \
+    }                                                                          \
+    return res;                                                                \
+  }
+
+__SYCL_HALF_PRECISION_MATH_FUNCTION_2_OVERLOAD(divide)
+__SYCL_HALF_PRECISION_MATH_FUNCTION_2_OVERLOAD(powr)
+
+#undef __SYCL_HALF_PRECISION_MATH_FUNCTION_2_OVERLOAD
+
 // genfloatf cos (genfloatf x)
 template <typename T>
 detail::enable_if_t<detail::is_genfloatf<T>::value, T> cos(T x) __NOEXC {
@@ -1561,6 +1810,82 @@ detail::enable_if_t<detail::is_genfloatf<T>::value, T> tan(T x) __NOEXC {
 }
 
 } // namespace half_precision
+
+#ifdef __FAST_MATH__
+/* ----------------- -ffast-math functions. ---------------------------------*/
+// genfloatf cos (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> cos(T x) __NOEXC {
+  return native::cos(x);
+}
+
+// genfloatf exp (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> exp(T x) __NOEXC {
+  return native::exp(x);
+}
+
+// genfloatf exp2 (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> exp2(T x) __NOEXC {
+  return native::exp2(x);
+}
+
+// genfloatf exp10 (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> exp10(T x) __NOEXC {
+  return native::exp10(x);
+}
+
+// genfloatf log(genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> log(T x) __NOEXC {
+  return native::log(x);
+}
+
+// genfloatf log2 (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> log2(T x) __NOEXC {
+  return native::log2(x);
+}
+
+// genfloatf log10 (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> log10(T x) __NOEXC {
+  return native::log10(x);
+}
+
+// genfloatf powr (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> powr(T x, T y) __NOEXC {
+  return native::powr(x, y);
+}
+
+// genfloatf rsqrt (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> rsqrt(T x) __NOEXC {
+  return native::rsqrt(x);
+}
+
+// genfloatf sin (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> sin(T x) __NOEXC {
+  return native::sin(x);
+}
+
+// genfloatf sqrt (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> sqrt(T x) __NOEXC {
+  return native::sqrt(x);
+}
+
+// genfloatf tan (genfloatf x)
+template <typename T>
+detail::enable_if_t<detail::is_genfloat<T>::value, T> tan(T x) __NOEXC {
+  return native::tan(x);
+}
+
+#endif // __FAST_MATH__
 } // namespace sycl
 } // __SYCL_INLINE_NAMESPACE(cl)
 
