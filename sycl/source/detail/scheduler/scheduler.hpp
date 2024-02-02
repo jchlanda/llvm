@@ -456,6 +456,8 @@ public:
   void cancelFusion(QueueImplPtr Queue);
 
   EventImplPtr completeFusion(QueueImplPtr Queue, const property_list &);
+  sycl::detail::pi::PiKernel completeJIT(QueueImplPtr Queue,
+                                         CGExecKernel *InputKernel);
 
   bool isInFusionMode(QueueIdT Queue);
 
@@ -662,6 +664,8 @@ protected:
 
     void cancelFusion(QueueImplPtr Queue, std::vector<Command *> &ToEnqueue);
 
+    sycl::detail::pi::PiKernel completeJIT(QueueImplPtr Queue,
+                                           CGExecKernel *InputKernel);
     EventImplPtr completeFusion(QueueImplPtr Queue,
                                 std::vector<Command *> &ToEnqueue,
                                 const property_list &);

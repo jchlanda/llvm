@@ -36,6 +36,8 @@ public:
   std::unique_ptr<detail::CG>
   fuseKernels(QueueImplPtr Queue, std::vector<ExecCGCommand *> &InputKernels,
               const property_list &);
+  sycl::detail::pi::PiKernel
+  jitKernel(QueueImplPtr Queue, CGExecKernel *InputKernel);
 
   static jit_compiler &get_instance() {
     static jit_compiler instance{};

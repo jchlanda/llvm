@@ -61,6 +61,8 @@ public:
               View<ParameterInternalization> Internalization,
               View<jit_compiler::JITConstant> JITConstants);
 
+  static FusionResult jitKernel(View<SYCLKernelInfo> KernelInformation);
+
   /// Clear all previously set options.
   static void resetConfiguration();
 

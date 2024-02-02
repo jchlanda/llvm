@@ -641,6 +641,91 @@ updatePromotedArgs(const ::jit_compiler::SYCLKernelInfo &FusedKernelInfo,
   }
 }
 
+sycl::detail::pi::PiKernel jit_compiler::jitKernel(QueueImplPtr Queue,
+                                                   CGExecKernel *InputKernel) {
+  assert(InputKernel && "No input kernel found");
+
+  auto KernelName = InputKernel->MKernelName;
+  if (KernelName.empty()) {
+    throw sycl::exception(
+        sycl::make_error_code(sycl::errc::invalid),
+        "Cannot fuse kernel with invalid kernel function name");
+    return nullptr;
+  }
+
+  const RTDeviceBinaryImage *DeviceImage{nullptr};
+  std::tie(DeviceImage, std::ignore) = retrieveKernelBinary(Queue, InputKernel);
+
+  if (!DeviceImage) {
+    throw sycl::exception(sycl::make_error_code(sycl::errc::invalid),
+                          "No suitable IR available for jitting");
+    return nullptr;
+  }
+
+  auto DeviceImageSize = static_cast<size_t>(RawDeviceImage.BinaryEnd -
+                                             RawDeviceImage.BinaryStart);
+  // Set 0 as the number of address bits, because the JIT compiler can set
+  // this field based on information from SPIR-V/LLVM module's data-layout.
+  auto BinaryImageFormat = translateBinaryImageFormat(DeviceImage->getFormat());
+  if (BinaryImageFormat == ::jit_compiler::BinaryFormat::INVALID) {
+    throw sycl::exception(sycl::make_error_code(sycl::errc::invalid),
+                          "No suitable IR available for jitting");
+    return nullptr;
+  }
+  ::jit_compiler::SYCLKernelBinaryInfo BinInfo{
+      BinaryImageFormat, 0, RawDeviceImage.BinaryStart, DeviceImageSize};
+
+  ::jit_compiler::SYCLKernelInfo InputKernelInfo{KernelName, {}, {}, BinInfo};
+
+  ::jit_compiler::TargetInfo TargetInfo = getTargetInfo(Queue);
+  ::jit_compiler::BinaryFormat TargetFormat = TargetInfo.getFormat();
+  bool DebugEnabled =
+      detail::SYCLConfig<detail::SYCL_RT_WARNING_LEVEL>::get() > 0;
+  ::jit_compiler::Config JITConfig;
+  JITConfig.set<::jit_compiler::option::JITEnableVerbose>(DebugEnabled);
+  JITConfig.set<::jit_compiler::option::JITEnableCaching>(
+      detail::SYCLConfig<detail::SYCL_ENABLE_FUSION_CACHING>::get());
+  JITConfig.set<::jit_compiler::option::JITTargetInfo>(TargetInfo);
+
+  auto JITResult = ::jit_compiler::KernelFusion::jitKernel(
+      *MJITContext, std::move(JITConfig), InputKernelInfo);
+  if (JITResult.failed()) {
+    std::string Message{"JIT compilation for kernel failed with message:\n"};
+    Message.append(JITResult.getErrorMessage());
+    if (DebugEnabled) {
+      std::cerr << Message << "\n";
+    }
+    throw sycl::exception(sycl::make_error_code(sycl::errc::invalid), Message);
+    return nullptr;
+  }
+
+  auto &JITKernelInfo = JITResult.getKernelInfo();
+
+  auto PIDeviceBinaries = createPIDeviceBinary(JITKernelInfo, TargetFormat);
+  detail::ProgramManager::getInstance().addImages(PIDeviceBinaries);
+
+  const bool OrigCacheCfg = SYCLConfig<SYCL_CACHE_IN_MEM>::get();
+  if (OrigCacheCfg) {
+    if (0 != setenv("SYCL_CACHE_IN_MEM", "0", true)) {
+      throw sycl::exception(sycl::make_error_code(sycl::errc::invalid),
+                            "Failed to set env variable in JIT kernel.");
+    }
+    SYCLConfig<SYCL_CACHE_IN_MEM>::reset();
+  }
+  auto &PM = detail::ProgramManager::getInstance();
+  auto NewKernel = std::get<0>(PM.getOrCreateKernel(
+      Queue->getContextImplPtr(), Queue->getDeviceImplPtr(), KernelName));
+  if (OrigCacheCfg) {
+    if (0 != setenv("SYCL_CACHE_IN_MEM", "1", true)) {
+      throw sycl::exception(sycl::make_error_code(sycl::errc::invalid),
+                            "Failed to set env variable in JIT kernel.");
+    }
+    SYCLConfig<SYCL_CACHE_IN_MEM>::reset();
+  }
+
+  return NewKernel;
+}
+
 std::unique_ptr<detail::CG>
 jit_compiler::fuseKernels(QueueImplPtr Queue,
                           std::vector<ExecCGCommand *> &InputKernels,

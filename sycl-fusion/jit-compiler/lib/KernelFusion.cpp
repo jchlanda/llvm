@@ -16,6 +16,7 @@
 #include "helper/ErrorHandling.h"
 #include "translation/KernelTranslation.h"
 #include "translation/SPIRVLLVMTranslation.h"
+#include "llvm/Support/GraphWriter.h"
 #include <llvm/Support/Error.h>
 #include <sstream>
 
@@ -68,6 +69,51 @@ static bool isTargetFormatSupported(BinaryFormat TargetFormat) {
   default:
     return false;
   }
+}
+
+FusionResult KernelFusion::jitKernel(View<SYCLKernelInfo> KernelInformation) {
+  assert(KernelInformation.size() == 1 && "Only expecting one kernel to jit.");
+  const auto *KernelName = KernelInformation.begin()->Name.c_str();
+  auto &JITCtx = JITContext::getInstance();
+
+  TargetInfo TargetInfo = ConfigHelper::get<option::JITTargetInfo>();
+  BinaryFormat TargetFormat = TargetInfo.getFormat();
+
+  if (!isTargetFormatSupported(TargetFormat)) {
+    return FusionResult(
+        "Fusion output target format not supported by this build");
+  }
+
+  SYCLModuleInfo ModuleInfo;
+  ModuleInfo.kernels().insert(ModuleInfo.kernels().end(),
+                              KernelInformation.begin(),
+                              KernelInformation.end());
+  // Load all input kernels from their respective SPIR-V modules into a single
+  // LLVM IR module.
+  llvm::Expected<std::unique_ptr<llvm::Module>> ModOrError =
+      translation::KernelTranslator::loadKernels(*JITCtx.getLLVMContext(),
+                                                 ModuleInfo.kernels());
+  if (auto Error = ModOrError.takeError()) {
+    return errorToFusionResult(std::move(Error), "SPIR-V translation failed");
+  }
+  std::unique_ptr<llvm::Module> NewMod = std::move(*ModOrError);
+  std::unique_ptr<SYCLModuleInfo> NewModInfo =
+      fusion::FusionPipeline::runJITPasses(*NewMod, ModuleInfo);
+  if (!NewMod->getFunction(KernelName)) {
+    return FusionResult{"JIT passes should not fail"};
+  }
+  if (!NewModInfo->hasKernelFor(KernelName)) {
+    return FusionResult{"No KernelInfo for fused kernel"};
+  }
+
+  SYCLKernelInfo &JITKernelInfo = *NewModInfo->getKernelFor(KernelName);
+  if (auto Error = translation::KernelTranslator::translateKernel(
+          JITKernelInfo, *NewMod, JITCtx, TargetFormat)) {
+    return errorToFusionResult(std::move(Error),
+                               "Translation to output format failed");
+  }
+
+  return FusionResult{JITKernelInfo};
 }
 
 FusionResult KernelFusion::fuseKernels(
