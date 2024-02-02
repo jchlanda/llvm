@@ -12,6 +12,7 @@
 #include "helper/ConfigHelper.h"
 #include "internalization/Internalization.h"
 #include "kernel-fusion/SYCLKernelFusion.h"
+#include "kernel-fusion/SYCLSpecConstMaterializer.h"
 #include "kernel-info/SYCLKernelInfo.h"
 #include "syclcp/SYCLCP.h"
 
@@ -140,4 +141,26 @@ FusionPipeline::runFusionPasses(Module &Mod, SYCLModuleInfo &InputInfo,
   assert(NewModInfo.ModuleInfo && "Failed to retrieve SYCL module info");
 
   return std::make_unique<SYCLModuleInfo>(std::move(*NewModInfo.ModuleInfo));
+}
+
+bool FusionPipeline::runJITPasses(llvm::Module &Mod) {
+  PassBuilder PB;
+  LoopAnalysisManager LAM;
+  FunctionAnalysisManager FAM;
+  CGSCCAnalysisManager CGAM;
+  ModuleAnalysisManager MAM;
+  PB.registerModuleAnalyses(MAM);
+  PB.registerCGSCCAnalyses(CGAM);
+  PB.registerFunctionAnalyses(FAM);
+  PB.registerLoopAnalyses(LAM);
+  PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+  ModulePassManager MPM;
+  FunctionPassManager FPM;
+  FPM.addPass(
+      SYCLSpecConstMaterializer{SpecConstBlob.data(), SpecConstBlob.size()});
+  FPM.addPass(SCCPPass{});
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
+  MPM.run(Mod, MAM);
+
+  return true;
 }
