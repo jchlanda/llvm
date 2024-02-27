@@ -143,7 +143,8 @@ FusionPipeline::runFusionPasses(Module &Mod, SYCLModuleInfo &InputInfo,
   return std::make_unique<SYCLModuleInfo>(std::move(*NewModInfo.ModuleInfo));
 }
 
-bool FusionPipeline::runJITPasses(llvm::Module &Mod) {
+bool FusionPipeline::runJITPasses(llvm::Module &Mod,
+                                  std::vector<unsigned char> &SpecConstBlob) {
   PassBuilder PB;
   LoopAnalysisManager LAM;
   FunctionAnalysisManager FAM;

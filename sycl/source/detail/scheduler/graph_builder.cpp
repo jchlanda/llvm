@@ -1527,10 +1527,11 @@ static bool checkForCircularDependency(Command *Cmd, bool IsPartOfFusion,
   return false;
 }
 
-sycl::detail::pi::PiKernel
-Scheduler::GraphBuilder::completeJIT(QueueImplPtr Queue,
-                                     CGExecKernel *InputKernel) {
-  return detail::jit_compiler::get_instance().jitKernel(Queue, InputKernel);
+sycl::detail::pi::PiKernel Scheduler::GraphBuilder::completeJIT(
+    QueueImplPtr Queue, RTDeviceBinaryImage *BinImage,
+    const std::string &KernelName, std::vector<unsigned char> &SpecConstBlob) {
+  return detail::jit_compiler::get_instance().jitKernel(
+      Queue, BinImage, KernelName, SpecConstBlob);
 }
 
 EventImplPtr

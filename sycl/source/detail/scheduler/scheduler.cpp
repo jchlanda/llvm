@@ -627,9 +627,11 @@ void Scheduler::cancelFusion(QueueImplPtr Queue) {
   enqueueCommandForCG(nullptr, ToEnqueue);
 }
 
-sycl::detail::pi::PiKernel Scheduler::completeJIT(QueueImplPtr Queue,
-                                                  CGExecKernel *InputKernel) {
-  return MGraphBuilder.completeJIT(Queue, InputKernel);
+sycl::detail::pi::PiKernel
+Scheduler::completeJIT(QueueImplPtr Queue, RTDeviceBinaryImage *BinImage,
+                       const std::string &KernelName,
+                       std::vector<unsigned char> &SpecConstBlob) {
+  return MGraphBuilder.completeJIT(Queue, BinImage, KernelName, SpecConstBlob);
 }
 
 EventImplPtr Scheduler::completeFusion(QueueImplPtr Queue,

@@ -68,7 +68,6 @@ getPiImageCopyFlags(sycl::usm::alloc SrcPtrType, sycl::usm::alloc DstPtrType) {
   throw sycl::exception(make_error_code(errc::invalid),
                         "Unknown copy destination location");
 }
-
 } // namespace detail
 
 handler::handler(std::shared_ptr<detail::queue_impl> Queue, bool IsHost)
@@ -289,6 +288,11 @@ event handler::finalize() {
               /* event */ nullptr);
             Result = PI_SUCCESS;
           } else {
+            detail::RTDeviceBinaryImage *BinImage = nullptr;
+            if (detail::SYCLConfig<detail::SYCL_JIT_KERNELS>::get())
+              BinImage = detail::retrieveAMDGCNOrNVPTXKernelBinary(
+                  MQueue, MKernelName.c_str());
+
             Result = enqueueImpKernel(
                 MQueue, MNDRDesc, MArgs, KernelBundleImpPtr, MKernel,
 #ifdef __INTEL_PREVIEW_BREAKING_CHANGES
@@ -296,7 +300,8 @@ event handler::finalize() {
 #else
                 MKernelName, RawEvents, NewEvent, nullptr,
 #endif
-                MImpl->MKernelCacheConfig, MImpl->MKernelIsCooperative);
+                MImpl->MKernelCacheConfig, MImpl->MKernelIsCooperative,
+                BinImage);
           }
         }
 #ifdef XPTI_ENABLE_INSTRUMENTATION

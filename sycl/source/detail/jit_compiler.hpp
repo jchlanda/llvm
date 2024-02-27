@@ -37,7 +37,9 @@ public:
   fuseKernels(QueueImplPtr Queue, std::vector<ExecCGCommand *> &InputKernels,
               const property_list &);
   sycl::detail::pi::PiKernel
-  jitKernel(QueueImplPtr Queue, CGExecKernel *InputKernel);
+  jitKernel(QueueImplPtr Queue, RTDeviceBinaryImage *BinImage,
+            const std::string &KernelName,
+            std::vector<unsigned char> &SpecConstBlob);
 
   static jit_compiler &get_instance() {
     static jit_compiler instance{};

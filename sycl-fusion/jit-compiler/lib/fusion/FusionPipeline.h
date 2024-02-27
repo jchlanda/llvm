@@ -27,7 +27,8 @@ public:
   static std::unique_ptr<SYCLModuleInfo>
   runFusionPasses(llvm::Module &Mod, SYCLModuleInfo &InputInfo,
                   BarrierFlags BarriersFlags);
-  static bool runJITPasses(llvm::Module &Mod);
+  static bool runJITPasses(llvm::Module &Mod,
+                           std::vector<unsigned char> &SpecConstBlob);
 };
 } // namespace fusion
 } // namespace jit_compiler

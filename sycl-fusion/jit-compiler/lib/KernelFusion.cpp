@@ -16,7 +16,6 @@
 #include "helper/ErrorHandling.h"
 #include "translation/KernelTranslation.h"
 #include "translation/SPIRVLLVMTranslation.h"
-#include "llvm/Support/GraphWriter.h"
 #include <llvm/Support/Error.h>
 #include <sstream>
 
@@ -71,9 +70,10 @@ static bool isTargetFormatSupported(BinaryFormat TargetFormat) {
   }
 }
 
-FusionResult KernelFusion::jitKernel(View<SYCLKernelInfo> KernelInformation) {
-  assert(KernelInformation.size() == 1 && "Only expecting one kernel to jit.");
-  const auto *KernelName = KernelInformation.begin()->Name.c_str();
+FusionResult
+KernelFusion::jitKernel(SYCLKernelInfo &KernelInformation,
+                        std::vector<unsigned char> &SpecConstBlob) {
+  const auto *KernelName = KernelInformation.Name.c_str();
   auto &JITCtx = JITContext::getInstance();
 
   TargetInfo TargetInfo = ConfigHelper::get<option::JITTargetInfo>();
@@ -85,9 +85,7 @@ FusionResult KernelFusion::jitKernel(View<SYCLKernelInfo> KernelInformation) {
   }
 
   SYCLModuleInfo ModuleInfo;
-  ModuleInfo.kernels().insert(ModuleInfo.kernels().end(),
-                              KernelInformation.begin(),
-                              KernelInformation.end());
+  ModuleInfo.kernels().insert(ModuleInfo.kernels().end(), KernelInformation);
   // Load all input kernels from their respective SPIR-V modules into a single
   // LLVM IR module.
   llvm::Expected<std::unique_ptr<llvm::Module>> ModOrError =
@@ -97,16 +95,12 @@ FusionResult KernelFusion::jitKernel(View<SYCLKernelInfo> KernelInformation) {
     return errorToFusionResult(std::move(Error), "SPIR-V translation failed");
   }
   std::unique_ptr<llvm::Module> NewMod = std::move(*ModOrError);
-  std::unique_ptr<SYCLModuleInfo> NewModInfo =
-      fusion::FusionPipeline::runJITPasses(*NewMod, ModuleInfo);
-  if (!NewMod->getFunction(KernelName)) {
+  if (!fusion::FusionPipeline::runJITPasses(*NewMod, SpecConstBlob) ||
+      !NewMod->getFunction(KernelName)) {
     return FusionResult{"JIT passes should not fail"};
   }
-  if (!NewModInfo->hasKernelFor(KernelName)) {
-    return FusionResult{"No KernelInfo for fused kernel"};
-  }
 
-  SYCLKernelInfo &JITKernelInfo = *NewModInfo->getKernelFor(KernelName);
+  SYCLKernelInfo &JITKernelInfo = *ModuleInfo.getKernelFor(KernelName);
   if (auto Error = translation::KernelTranslator::translateKernel(
           JITKernelInfo, *NewMod, JITCtx, TargetFormat)) {
     return errorToFusionResult(std::move(Error),
