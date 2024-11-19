@@ -91,3 +91,31 @@ _CLC_OVERLOAD _CLC_DEF half __spirv_ocl_length(half3 p) { V_HLENGTH(p); }
 _CLC_OVERLOAD _CLC_DEF half __spirv_ocl_length(half4 p) { V_HLENGTH(p); }
 
 #endif
+
+#ifdef cl_khr_fp16
+#ifdef __CLC_HAS_FLOAT16
+
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_fp16_t
+__spirv_ocl_length(__clc_float16_t args_0) {
+  return __spirv_ocl_length(as_half(args_0));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_fp16_t
+__spirv_ocl_length(__clc_vec2_float16_t args_0) {
+  return __spirv_ocl_length(as_half2(args_0));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_fp16_t
+__spirv_ocl_length(__clc_vec3_float16_t args_0) {
+  return __spirv_ocl_length(as_half3(args_0));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_fp16_t
+__spirv_ocl_length(__clc_vec4_float16_t args_0) {
+  return __spirv_ocl_length(as_half4(args_0));
+}
+
+#endif // __CLC_HAS_FLOAT16
+#endif // cl_khr_fp16

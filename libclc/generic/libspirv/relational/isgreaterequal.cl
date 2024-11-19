@@ -11,10 +11,98 @@
 
 #define _CLC_SPIRV_BUILTIN __spirv_FOrdGreaterThanEqual
 #define _CLC_BUILTIN_IMPL __builtin_isgreaterequal
+
+#ifdef cl_khr_fp16
+#ifdef __CLC_HAS_FLOAT16
+
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_bool_t
+__spirv_FOrdGreaterThanEqual(__clc_float16_t args_0, __clc_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half(args_0), as_half(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec2_int8_t
+__spirv_FOrdGreaterThanEqual(__clc_vec2_float16_t args_0,
+                             __clc_vec2_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half2(args_0), as_half2(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec3_int8_t
+__spirv_FOrdGreaterThanEqual(__clc_vec3_float16_t args_0,
+                             __clc_vec3_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half3(args_0), as_half3(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec4_int8_t
+__spirv_FOrdGreaterThanEqual(__clc_vec4_float16_t args_0,
+                             __clc_vec4_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half4(args_0), as_half4(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec8_int8_t
+__spirv_FOrdGreaterThanEqual(__clc_vec8_float16_t args_0,
+                             __clc_vec8_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half8(args_0), as_half8(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec16_int8_t
+__spirv_FOrdGreaterThanEqual(__clc_vec16_float16_t args_0,
+                             __clc_vec16_float16_t args_1) {
+  return __spirv_FOrdGreaterThanEqual(as_half16(args_0), as_half16(args_1));
+}
+
+#endif // cl_khr_fp16
+#endif // cl_khr_fp16
+
 #include "genbinrelational.inc"
 #undef _CLC_SPIRV_BUILTIN
 #undef _CLC_BUILTIN_IMPL
 
 #define _CLC_SPIRV_BUILTIN __spirv_FUnordGreaterThanEqual
 #define _CLC_BUILTIN_IMPL(X, Y) X >= Y
+
+#ifdef cl_khr_fp16
+#ifdef __CLC_HAS_FLOAT16
+
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_bool_t
+__spirv_FUnordGreaterThanEqual(__clc_float16_t args_0, __clc_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half(args_0), as_half(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec2_int8_t
+__spirv_FUnordGreaterThanEqual(__clc_vec2_float16_t args_0,
+                               __clc_vec2_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half2(args_0), as_half2(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec3_int8_t
+__spirv_FUnordGreaterThanEqual(__clc_vec3_float16_t args_0,
+                               __clc_vec3_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half3(args_0), as_half3(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec4_int8_t
+__spirv_FUnordGreaterThanEqual(__clc_vec4_float16_t args_0,
+                               __clc_vec4_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half4(args_0), as_half4(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec8_int8_t
+__spirv_FUnordGreaterThanEqual(__clc_vec8_float16_t args_0,
+                               __clc_vec8_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half8(args_0), as_half8(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec16_int8_t
+__spirv_FUnordGreaterThanEqual(__clc_vec16_float16_t args_0,
+                               __clc_vec16_float16_t args_1) {
+  return __spirv_FUnordGreaterThanEqual(as_half16(args_0), as_half16(args_1));
+}
+
+#endif // __CLC_HAS_FLOAT16
+#endif // cl_khr_fp16
+
 #include "genbinrelational.inc"

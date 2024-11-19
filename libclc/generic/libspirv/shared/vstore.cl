@@ -323,3 +323,1022 @@ _CLC_DEF _CLC_OVERLOAD double __clc_rte(double x) {
 #undef DECLARE_HELPER
 #undef VSTORE_ADDR_SPACES
 #undef VSTORE_VECTORIZE
+
+#ifdef cl_khr_fp16
+#ifdef __CLC_HAS_FLOAT16
+
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+#ifdef cl_khr_fp64
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_half(__clc_fp32_t args_0,
+                                                    __clc_size_t args_1,
+                                                    __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half(__clc_fp32_t args_0, __clc_size_t args_1,
+                        __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half(__clc_fp32_t args_0, __clc_size_t args_1,
+                        __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_half(__clc_fp64_t args_0,
+                                                    __clc_size_t args_1,
+                                                    __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half(__clc_fp64_t args_0, __clc_size_t args_1,
+                        __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half(__clc_fp64_t args_0, __clc_size_t args_1,
+                        __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_half(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_half_r(__clc_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2,
+                                                      __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half_r(__clc_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2,
+                          __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                            args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half_r(__clc_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2,
+                          __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                            args_3);
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_half_r(__clc_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2,
+                                                      __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half_r(__clc_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2,
+                          __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                            args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_half_r(__clc_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2,
+                          __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_half_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                            args_3);
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec2_fp32_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec3_fp32_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec4_fp32_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec8_fp32_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec16_fp32_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec2_fp64_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec3_fp64_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec4_fp64_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec8_fp64_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn(__clc_vec16_fp64_t args_0,
+                                                     __clc_size_t args_1,
+                                                     __clc_float16_t *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                         __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstore_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec2_fp32_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec3_fp32_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec4_fp32_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec8_fp32_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec2_fp64_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec3_fp64_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec4_fp64_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstore_halfn_r(__clc_vec8_fp64_t args_0,
+                                                       __clc_size_t args_1,
+                                                       __clc_float16_t *args_2,
+                                                       __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __local *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                             args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstore_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                           __clc_float16_t __global *args_2,
+                           __clc_uint32_t args_3) {
+  __spirv_ocl_vstore_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                             args_3);
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec2_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec3_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec4_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec8_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec16_fp32_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec2_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec3_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec4_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec8_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstorea_halfn(__clc_vec16_fp64_t args_0,
+                                                      __clc_size_t args_1,
+                                                      __clc_float16_t *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                          __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstorea_halfn(args_0, args_1, (__clc_fp16_t __global *)(args_2));
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp32_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+#ifdef cl_khr_fp64
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec2_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec3_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec4_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec8_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t *args_2, __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t *)(args_2), args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __local *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __local *)(args_2),
+                              args_3);
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstorea_halfn_r(__clc_vec16_fp64_t args_0, __clc_size_t args_1,
+                            __clc_float16_t __global *args_2,
+                            __clc_uint32_t args_3) {
+  __spirv_ocl_vstorea_halfn_r(args_0, args_1, (__clc_fp16_t __global *)(args_2),
+                              args_3);
+}
+
+#endif
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstoren(__clc_vec2_float16_t args_0,
+                                                __clc_size_t args_1,
+                                                __clc_float16_t *args_2) {
+  __spirv_ocl_vstoren(as_half2(args_0), args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec2_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstoren(as_half2(args_0), args_1,
+                      (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec2_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstoren(as_half2(args_0), args_1,
+                      (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstoren(__clc_vec3_float16_t args_0,
+                                                __clc_size_t args_1,
+                                                __clc_float16_t *args_2) {
+  __spirv_ocl_vstoren(as_half3(args_0), args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec3_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstoren(as_half3(args_0), args_1,
+                      (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec3_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstoren(as_half3(args_0), args_1,
+                      (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstoren(__clc_vec4_float16_t args_0,
+                                                __clc_size_t args_1,
+                                                __clc_float16_t *args_2) {
+  __spirv_ocl_vstoren(as_half4(args_0), args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec4_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstoren(as_half4(args_0), args_1,
+                      (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec4_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstoren(as_half4(args_0), args_1,
+                      (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstoren(__clc_vec8_float16_t args_0,
+                                                __clc_size_t args_1,
+                                                __clc_float16_t *args_2) {
+  __spirv_ocl_vstoren(as_half8(args_0), args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec8_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstoren(as_half8(args_0), args_1,
+                      (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec8_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstoren(as_half8(args_0), args_1,
+                      (__clc_fp16_t __global *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void __spirv_ocl_vstoren(__clc_vec16_float16_t args_0,
+                                                __clc_size_t args_1,
+                                                __clc_float16_t *args_2) {
+  __spirv_ocl_vstoren(as_half16(args_0), args_1, (__clc_fp16_t *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec16_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __local *args_2) {
+  __spirv_ocl_vstoren(as_half16(args_0), args_1,
+                      (__clc_fp16_t __local *)(args_2));
+}
+
+_CLC_OVERLOAD _CLC_DEF void
+__spirv_ocl_vstoren(__clc_vec16_float16_t args_0, __clc_size_t args_1,
+                    __clc_float16_t __global *args_2) {
+  __spirv_ocl_vstoren(as_half16(args_0), args_1,
+                      (__clc_fp16_t __global *)(args_2));
+}
+#endif // __CLC_HAS_FLOAT16
+#endif // cl_khr_fp16

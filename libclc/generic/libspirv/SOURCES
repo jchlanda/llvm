@@ -2,7 +2,6 @@ atomic/loadstore_helpers_unordered.ll
 atomic/loadstore_helpers_release.ll
 atomic/loadstore_helpers_acquire.ll
 atomic/loadstore_helpers_seq_cst.ll
-float16.cl
 subnormal_config.cl
 subnormal_helper_func.ll
 async/async_work_group_strided_copy.cl
@@ -159,6 +158,7 @@ math/native_rsqrt.cl
 math/native_sin.cl
 math/native_sqrt.cl
 math/native_tan.cl
+math/native_tanh.cl
 math/nextafter.cl
 math/pow.cl
 math/pown.cl
@@ -183,6 +183,7 @@ math/tgamma.cl
 math/trunc.cl
 misc/shuffle.cl
 misc/shuffle2.cl
+misc/float_convert.cl
 relational/all.cl
 relational/any.cl
 relational/bitselect.cl

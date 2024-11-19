@@ -45,3 +45,21 @@ _CLC_OVERLOAD _CLC_DEF half4 __spirv_ocl_cross(half4 p0, half4 p1) {
                  p0.x * p1.y - p0.y * p1.x, 0.f);
 }
 #endif
+
+#ifdef cl_khr_fp16
+#ifdef __CLC_HAS_FLOAT16
+
+#pragma OPENCL EXTENSION cl_khr_fp16 : enable
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec3_fp16_t
+__spirv_ocl_cross(__clc_vec3_float16_t args_0, __clc_vec3_float16_t args_1) {
+  return __spirv_ocl_cross(as_half3(args_0), as_half3(args_1));
+}
+
+_CLC_OVERLOAD _CLC_DEF _CLC_CONSTFN __clc_vec4_fp16_t
+__spirv_ocl_cross(__clc_vec4_float16_t args_0, __clc_vec4_float16_t args_1) {
+  return __spirv_ocl_cross(as_half4(args_0), as_half4(args_1));
+}
+
+#endif // __CLC_HAS_FLOAT16
+#endif // cl_khr_fp16
