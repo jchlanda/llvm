@@ -240,6 +240,7 @@ AMDGPUTargetInfo::AMDGPUTargetInfo(const llvm::Triple &Triple,
   HasFloat16 = true;
   WavefrontSize = (GPUFeatures & llvm::AMDGPU::FEATURE_WAVE32) ? 32 : 64;
   AllowAMDGPUUnsafeFPAtomics = Opts.AllowAMDGPUUnsafeFPAtomics;
+  OpenCLDefIsGenericAddrSpace = Opts.OpenCLDefIsGenericAddrSpace;
 
   // Set pointer width and alignment for the generic address space.
   PointerWidth = PointerAlign = getPointerWidthV(LangAS::Default);
@@ -262,8 +263,13 @@ void AMDGPUTargetInfo::adjust(DiagnosticsEngine &Diags, LangOptions &Opts) {
   // ToDo: There are still a few places using default address space as private
   // address space in OpenCL, which needs to be cleaned up, then Opts.OpenCL
   // can be removed from the following line.
-  setAddressSpaceMap(/*DefaultIsPrivate=*/Opts.OpenCL ||
-                     !isAMDGCN(getTriple()));
+  bool DefaultIsPrivate = Opts.OpenCL || !isAMDGCN(getTriple());
+  // When compiling OpenCL code to be used as library linked agains SYCL code,
+  // make sure that the default address space is set to generic (this is the
+  // case when building libclc).
+  if (Opts.OpenCL && OpenCLDefIsGenericAddrSpace)
+    DefaultIsPrivate = false;
+  setAddressSpaceMap(DefaultIsPrivate);
 }
 
 ArrayRef<Builtin::Info> AMDGPUTargetInfo::getTargetBuiltins() const {
