@@ -69,6 +69,7 @@ add_llvm_component_library(LLVMSYCLLowerIR
   SYCLPropagateJointMatrixUsage.cpp
   SYCLVirtualFunctionsAnalysis.cpp
   SYCLUtils.cpp
+  LowerAMDGCNDelayedPrintf.cpp
 
   LocalAccessorToSharedMemory.cpp
   GlobalOffset.cpp

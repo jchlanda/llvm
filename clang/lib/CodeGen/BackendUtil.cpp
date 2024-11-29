@@ -46,6 +46,7 @@
 #include "llvm/SYCLLowerIR/CompileTimePropertiesPass.h"
 #include "llvm/SYCLLowerIR/ESIMD/ESIMDVerifier.h"
 #include "llvm/SYCLLowerIR/ESIMD/LowerESIMD.h"
+#include "llvm/SYCLLowerIR/LowerAMDGCNDelayedPrintf.h"
 #include "llvm/SYCLLowerIR/LowerWGLocalMemory.h"
 #include "llvm/SYCLLowerIR/MutatePrintfAddrspace.h"
 #include "llvm/SYCLLowerIR/RecordSYCLAspectNames.h"
@@ -1216,6 +1217,9 @@ void EmitAssemblyHelper::RunOptimizationPipeline(
 
       if (TargetTriple.isNVPTX())
         MPM.addPass(SYCLCreateNVVMAnnotationsPass());
+
+      if (TargetTriple.isAMDGCN())
+        MPM.addPass(LowerAMDGCNDelayedPrintf());
 
       // Remove SYCL metadata added by the frontend, like sycl_aspects
       // Note, this pass should be at the end of the pipeline

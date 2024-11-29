@@ -92,6 +92,7 @@ enum DiagnosticKind {
   DK_MisExpect,
   DK_AspectMismatch,
   DK_SYCLIllegalVirtualCall,
+  DK_AMDGCNDelayedPrintf,
   DK_FirstPluginKind // Must be last value to work with
                      // getNextAvailablePluginDiagnosticKind
 };
@@ -1263,6 +1264,20 @@ public:
     return DI->getKind() == DK_SYCLIllegalVirtualCall;
   }
 };
+
+class DiagnosticInfoAMDGCNDelayedPrintf : public DiagnosticInfo {
+public:
+  DiagnosticInfoAMDGCNDelayedPrintf(const Twine &Message,
+                                    DiagnosticSeverity Severity = DS_Warning)
+      : DiagnosticInfo(DK_AMDGCNDelayedPrintf, Severity), Message(Message) {}
+
+  void print(DiagnosticPrinter &DP) const override;
+  const Twine &getMessage() const { return Message; }
+
+private:
+  const Twine &Message;
+};
+
 } // end namespace llvm
 
 #endif // LLVM_IR_DIAGNOSTICINFO_H

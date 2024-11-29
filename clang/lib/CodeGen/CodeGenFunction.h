@@ -4623,6 +4623,7 @@ public:
                                 llvm::CallBase **CallOrInvoke);
 
   RValue EmitNVPTXDevicePrintfCallExpr(const CallExpr *E);
+  RValue EmitAMDGPUDevicePrintfIntrinsicCallExpr(const CallExpr *E);
   RValue EmitAMDGPUDevicePrintfCallExpr(const CallExpr *E);
 
   RValue EmitBuiltinExpr(const GlobalDecl GD, unsigned BuiltinID,

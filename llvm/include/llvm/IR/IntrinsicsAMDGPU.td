@@ -3447,4 +3447,8 @@ def int_amdgcn_addrspacecast_nonnull : DefaultAttrsIntrinsic<
 // SYCL
 def int_amdgcn_implicit_offset : ClangBuiltin<"__builtin_amdgcn_implicit_offset">,
   Intrinsic<[LLVMQualPointerType<5>], [], [IntrNoMem, IntrSpeculatable]>;
+
+// SYCL delayed printf
+def int_amdgcn_delayed_printf_emission : ClangBuiltin<"__builtin_printf">,
+  Intrinsic<[llvm_i32_ty], [llvm_anyptr_ty, llvm_vararg_ty]>;
 }

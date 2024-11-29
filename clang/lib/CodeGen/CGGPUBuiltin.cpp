@@ -15,6 +15,7 @@
 #include "clang/Basic/Builtins.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/IR/IntrinsicsAMDGPU.h"
 #include "llvm/Transforms/Utils/AMDGPUEmitPrintf.h"
 
 using namespace clang;
@@ -161,6 +162,40 @@ RValue CodeGenFunction::EmitNVPTXDevicePrintfCallExpr(const CallExpr *E) {
   assert(getTarget().getTriple().isNVPTX());
   return EmitDevicePrintfCallExpr(
       E, this, GetVprintfDeclaration(CGM.getModule()), false);
+}
+
+RValue CodeGenFunction::EmitAMDGPUDevicePrintfIntrinsicCallExpr(const CallExpr *E) {
+  assert(E->getBuiltinCallee() == Builtin::BIprintf ||
+         E->getBuiltinCallee() == Builtin::BI__builtin_printf);
+  assert(E->getNumArgs() >= 1); // printf always has at least one arg.
+
+  SmallVector<llvm::Value *, 4> Args;
+  for (unsigned I = 0; I < E->getNumArgs(); ++I)
+    Args.push_back(this->EmitScalarExpr(E->getArg(I)));
+  llvm::Function *F = this->CGM.getIntrinsic(
+      llvm::Intrinsic::amdgcn_delayed_printf_emission , Args[0]->getType());
+
+  auto *M = Builder.GetInsertBlock()->getModule();
+  auto *Int64Ty = Builder.getInt64Ty();
+  auto *Int32Ty = Builder.getInt32Ty();
+  auto *PtrTy =
+      Builder.getPtrTy(M->getDataLayout().getDefaultGlobalsAddressSpace());
+  M->getOrInsertFunction("__ockl_printf_begin", Int64Ty, Int64Ty);
+  auto *BeginFn = M->getFunction("__ockl_printf_begin");
+  CGM.addUsedOrCompilerUsedGlobal(BeginFn);
+
+  M->getOrInsertFunction("__ockl_printf_append_args", Int64Ty, Int64Ty, Int32Ty,
+                         Int64Ty, Int64Ty, Int64Ty, Int64Ty, Int64Ty, Int64Ty,
+                         Int64Ty, Int32Ty);
+  auto *AppendArgsFn = M->getFunction("__ockl_printf_append_args");
+  CGM.addUsedOrCompilerUsedGlobal(AppendArgsFn);
+
+  M->getOrInsertFunction("__ockl_printf_append_string_n", Int64Ty, PtrTy,
+                         Int64Ty, Int32Ty);
+  auto *AppendStringNFn = M->getFunction("__ockl_printf_append_string_n");
+  CGM.addUsedOrCompilerUsedGlobal(AppendStringNFn);
+
+  return RValue::get(this->Builder.CreateCall(F, Args, "delayed_printf"));
 }
 
 RValue CodeGenFunction::EmitAMDGPUDevicePrintfCallExpr(const CallExpr *E) {

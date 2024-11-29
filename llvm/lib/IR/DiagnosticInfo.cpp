@@ -541,3 +541,7 @@ void DiagnosticInfoIllegalVirtualCall::print(DiagnosticPrinter &DP) const {
      << " performs virtual function call, but a kernel that is called from is "
         "not submitted with \"calls_indirectly\" property";
 }
+
+void DiagnosticInfoAMDGCNDelayedPrintf::print(DiagnosticPrinter &DP) const {
+  DP << getMessage();
+}
