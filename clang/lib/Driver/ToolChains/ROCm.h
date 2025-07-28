@@ -18,6 +18,7 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/VersionTuple.h"
+#include "llvm/TargetParser/TargetParser.h"
 #include "llvm/TargetParser/Triple.h"
 
 namespace clang {
@@ -75,6 +76,24 @@ private:
               StringRef SPACKReleaseStr = {})
         : Path(Path), StrictChecking(StrictChecking),
           SPACKReleaseStr(SPACKReleaseStr.str()) {}
+  };
+
+  struct CommonBitcodeLibsPreferences {
+    CommonBitcodeLibsPreferences(const Driver &D,
+                                 const llvm::opt::ArgList &DriverArgs,
+                                 StringRef GPUArch,
+                                 const Action::OffloadKind DeviceOffloadingKind,
+                                 const bool NeedsASanRT);
+
+    DeviceLibABIVersion ABIVer;
+    bool IsOpenMP;
+    bool Wave64;
+    bool DAZ;
+    bool FiniteOnly;
+    bool UnsafeMathOpt;
+    bool FastRelaxedMath;
+    bool CorrectSqrt;
+    bool GPUSan;
   };
 
   const Driver &D;
@@ -175,11 +194,11 @@ public:
 
   /// Get file paths of default bitcode libraries common to AMDGPU based
   /// toolchains.
-  llvm::SmallVector<ToolChain::BitCodeLibraryInfo, 12> getCommonBitcodeLibs(
-      const llvm::opt::ArgList &DriverArgs, StringRef LibDeviceFile,
-      bool Wave64, bool DAZ, bool FiniteOnly, bool UnsafeMathOpt,
-      bool FastRelaxedMath, bool CorrectSqrt, DeviceLibABIVersion ABIVer,
-      bool GPUSan, bool isOpenMP) const;
+  llvm::SmallVector<ToolChain::BitCodeLibraryInfo, 12>
+  getCommonBitcodeLibs(const llvm::opt::ArgList &DriverArgs,
+                       StringRef LibDeviceFile, StringRef GPUArch,
+                       const Action::OffloadKind DeviceOffloadingKind,
+                       const bool NeedsASanRT) const;
   /// Check file paths of default bitcode libraries common to AMDGPU based
   /// toolchains. \returns false if there are invalid or missing files.
   bool checkCommonBitcodeLibs(StringRef GPUArch, StringRef LibDeviceFile,
